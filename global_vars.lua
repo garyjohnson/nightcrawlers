@@ -1,0 +1,15 @@
+inspect = require "inspect"
+
+WIDTH = 400
+HEIGHT = 240
+
+TRUE_WHITE = {1,1,1}
+TRUE_BLACK = {0,0,0}
+
+BLACK = {0.19, 0.18, 0.16}
+WHITE = {0.84, 0.83, 0.8}
+LIGHT_GREY = { .3, .3, .3}
+DARK_GREY = { .6, .6, .6}
+
+BACKGROUND = WHITE
+FOREGROUND = LIGHT_GREY
