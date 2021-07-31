@@ -7,7 +7,7 @@ function Background:new()
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
 
   self.step = 1
-  self.startValue = 0.10
+  self.startValue = 0.3
   self.endValue = 0
   self.startY = 0
   self.endY = HEIGHT/2.5

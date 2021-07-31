@@ -5,6 +5,7 @@ Terrain = Object:extend()
 
 function Terrain:new()
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
+  self:generate()
 end
 
 function Terrain:generate()
@@ -22,4 +23,6 @@ function Terrain:generate()
       y = y + ((love.math.random() * (maxDrift*2)) - maxDrift)
     end
   end);
+
+  self.imageData = self.canvas:newImageData()
 end

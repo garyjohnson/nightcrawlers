@@ -4,7 +4,7 @@ const int indexMatrix4x4[16] = int[](0,  8,  2,  10,
                                      15, 7,  13, 5);
 
 vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ) {
-  vec4 c = Texel(texture, texture_coords);
+  vec4 c = Texel(texture, texture_coords) * color;
   float a = c[3];
   float c2 = c[0];
 
