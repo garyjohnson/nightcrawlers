@@ -5,6 +5,7 @@ require "person"
 
 function love.load()
   love.window.setMode(WIDTH, HEIGHT)
+  love.window.setTitle("Rooty tooty run and shooty")
 
   terrain = Terrain()
 
@@ -15,8 +16,8 @@ function love.load()
   shader = ditherShader
 end
 
-function love.update()
-  person:update()
+function love.update(dt)
+  person:update(dt)
 end
 
 function love.keyreleased( key )

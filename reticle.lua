@@ -9,7 +9,7 @@ function Reticle:new()
   self.radius = 6
 end
 
-function Reticle:update()
+function Reticle:update(dt)
 end
 
 function Reticle:draw()
