@@ -3,15 +3,20 @@ require "reticle"
 require "weapon_charge"
 require "projectile"
 require "math_utils"
+require "entity"
 
-Object = require "classic"
-Person = Object:extend()
+Person = Entity:extend()
 
 function Person:new(world)
+  Person.super.new(self)
+
   self.world = world
+
   self.reticle = Reticle()
   self.weaponCharge = WeaponCharge()
-  self.projectiles = {}
+
+  self:addEntity(self.weaponCharge, 1)
+  self:addEntity(self.reticle, 2)
 
   self.x = 100
   self.y = 1
@@ -32,35 +37,22 @@ function Person:new(world)
 end
 
 function Person:update(dt)
+  Person.super.update(self, dt)
+
   self:processInput(dt)
   self:processGravity(dt)
 
   self.reticle.x = self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle))
   self.reticle.y = self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle))
-  self.reticle:update(dt)
 
   self.weaponCharge.direction = self.direction
   self.weaponCharge.x = self.x + (self.width / 2)
   self.weaponCharge.y = self.y + 1
-  self.weaponCharge:update(dt)
-
-  for _, projectile in pairs(self.projectiles) do
-    projectile:update(dt)
-
-    if projectile:collidesWithTerrain(self.world.terrain) then
-      self.world.terrain:hit(projectile.x, projectile.y, 25)
-
-      for i = #self.projectiles, 1, -1 do
-        if self.projectiles[i] == projectile then
-          table.remove(self.projectiles, i)
-          break
-        end
-      end
-    end
-  end
 end
 
 function Person:draw()
+  Person.super.draw(self)
+
   self.weaponCharge:draw()
   self.reticle:draw()
 
@@ -71,15 +63,16 @@ function Person:draw()
 
   love.graphics.setColor(WHITE)
   love.graphics.printf(self.name, self.x-20, self.y - 20, self.width+40, "center")
-
-  for _, projectile in pairs(self.projectiles) do
-    projectile:draw()
-  end
 end
 
+
 function Person:fireProjectile()
-  local projectile = Projectile(self.reticle.x, self.reticle.y, self.reticleAngle, self.direction, self.weaponCharge.power)
-  table.insert(self.projectiles, projectile)
+  function handleProjectileHit(projectile)
+    self:removeEntity(projectile)
+  end
+
+  local projectile = Projectile(self.world, handleProjectileHit, self.reticle.x, self.reticle.y, self.reticleAngle, self.direction, self.weaponCharge.power)
+  self:addEntity(projectile)
 end
 
 function Person:canMove()

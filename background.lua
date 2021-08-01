@@ -1,9 +1,11 @@
 require "global_vars"
+require "entity"
 
-Object = require "classic"
-Background = Object:extend()
+Background = Entity:extend()
 
 function Background:new()
+  Background.super.new(self)
+
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
 
   self.step = 1
@@ -15,10 +17,9 @@ function Background:new()
   self:generate()
 end
 
-function Background:update(dt)
-end
-
 function Background:draw()
+  Background.super.draw(self)
+
   love.graphics.setColor(WHITE)
   love.graphics.draw(self.canvas)
 end

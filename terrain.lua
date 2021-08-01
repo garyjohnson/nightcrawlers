@@ -1,20 +1,20 @@
 require "global_vars"
 require "math_utils"
+require "entity"
 
-Object = require "classic"
-Terrain = Object:extend()
+Terrain = Entity:extend()
 
 function Terrain:new()
+  Terrain.super.new(self)
+
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
   self:generate()
-
   self.cachedYPoints = {}
 end
 
-function Terrain:update(dt)
-end
+function Terrain:draw()
+  Terrain.super.draw(self)
 
-function Terrain:draw(dt)
   love.graphics.setColor(WHITE)
   love.graphics.draw(self.canvas)
 end

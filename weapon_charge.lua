@@ -1,10 +1,12 @@
 require "global_vars"
 require "math_utils"
+require "entity"
 
-Object = require "classic"
-WeaponCharge = Object:extend()
+WeaponCharge = Entity:extend()
 
 function WeaponCharge:new()
+  WeaponCharge.super.new(self)
+
   self.x = 0
   self.y = 0
   self.direction = 1
@@ -22,15 +24,9 @@ function WeaponCharge:new()
   self.radius = 0
 end
 
-function WeaponCharge:cancel()
-  self.power = 0
-end
-
-function WeaponCharge:charge()
-  self.power = math.min(self.power + self.chargeSpeed, self.maxPower)
-end
-
 function WeaponCharge:update(dt)
+  WeaponCharge.super.update(self, dt)
+
   self.farX = self.x + (self.power * self.direction * math.cos(self.angle))
   self.farY = self.y + (self.power * math.sin(self.angle))
   self.topFarX = self.x + (self.power * self.direction * math.cos(self.angle - degToRad(10)))
@@ -42,6 +38,8 @@ function WeaponCharge:update(dt)
 end
 
 function WeaponCharge:draw()
+  WeaponCharge.super.draw(self)
+
   if self.power == 0 then
     return
   end
@@ -63,3 +61,12 @@ function WeaponCharge:draw()
   )
   love.graphics.circle('fill', self.farX + jitter, self.farY + jitter, self.radius)
 end
+
+function WeaponCharge:cancel()
+  self.power = 0
+end
+
+function WeaponCharge:charge()
+  self.power = math.min(self.power + self.chargeSpeed, self.maxPower)
+end
+
