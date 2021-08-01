@@ -7,8 +7,8 @@ require "math_utils"
 Object = require "classic"
 Person = Object:extend()
 
-function Person:new(terrain)
-  self.terrain = terrain
+function Person:new(world)
+  self.world = world
   self.reticle = Reticle()
   self.weaponCharge = WeaponCharge()
   self.projectiles = {}
@@ -46,6 +46,17 @@ function Person:update(dt)
 
   for _, projectile in pairs(self.projectiles) do
     projectile:update(dt)
+
+    if projectile:collidesWithTerrain(self.world.terrain) then
+      self.world.terrain:hit(projectile.x, projectile.y, 25)
+
+      for i = #self.projectiles, 1, -1 do
+        if self.projectiles[i] == projectile then
+          table.remove(self.projectiles, i)
+          break
+        end
+      end
+    end
   end
 end
 
@@ -116,7 +127,7 @@ function Person:processInput(dt)
 end
 
 function Person:processGravity(dt)
-  local groundPoint = self.terrain:findHighestYPoint(self.x, self.width)
+  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
   local footPoint = self.y + self.height
   if footPoint < groundPoint - 1 then
     self:fall(dt)
@@ -128,7 +139,7 @@ function Person:processGravity(dt)
 end
 
 function Person:isTouchingGround()
-  local groundPoint = self.terrain:findHighestYPoint(self.x, self.width)
+  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
   local footPoint = self.y + self.height
   return footPoint == groundPoint - 1
 end
@@ -141,7 +152,7 @@ function Person:fall(dt)
 end
 
 function Person:snapToGroundIfBelow()
-  local groundPoint = self.terrain:findHighestYPoint(self.x, self.width)
+  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
   local footPoint = self.y + self.height
 
   if footPoint > groundPoint - 1 then

@@ -11,6 +11,14 @@ function Terrain:new()
   self.cachedYPoints = {}
 end
 
+function Terrain:update(dt)
+end
+
+function Terrain:draw(dt)
+  love.graphics.setColor(WHITE)
+  love.graphics.draw(self.canvas)
+end
+
 function Terrain:generate()
   self.cachedYPoints = {}
 
@@ -27,6 +35,19 @@ function Terrain:generate()
       love.graphics.rectangle('fill', x, y+2, 2, HEIGHT - y)
       y = y + ((love.math.random() * (maxDrift*2)) - maxDrift)
     end
+  end);
+
+  self.imageData = self.canvas:newImageData()
+end
+
+function Terrain:hit(x, y, radius)
+  self.cachedYPoints = {}
+
+  self.canvas:renderTo(function() 
+    love.graphics.setBlendMode('replace')
+    love.graphics.setColor({ 0, 0, 0, 0 })
+    love.graphics.circle('fill', x, y, radius)
+    love.graphics.setBlendMode('alpha')
   end);
 
   self.imageData = self.canvas:newImageData()

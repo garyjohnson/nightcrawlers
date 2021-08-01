@@ -1,50 +1,34 @@
 require "global_vars"
-require "terrain"
-require "background"
-require "person"
+require "world"
 
 function love.load()
   love.window.setMode(WIDTH, HEIGHT)
   love.window.setTitle("Rooty tooty run and shooty")
 
-  terrain = Terrain()
+  world = World()
 
-  background = Background()
-  person = Person(terrain)
-
-  ditherShader = love.graphics.newShader("dither_shader.fs")
-  shader = ditherShader
+  globalShader = love.graphics.newShader("dither_shader.fs")
 end
 
 function love.update(dt)
-  person:update(dt)
-end
-
-function love.keyreleased( key )
-  if key == "r" then
-    terrain:generate()
-    person.y = 1
-  end
-
-  if key == "s" then
-    if shader == nil then
-      shader = ditherShader
-    else
-      shader = nil
-    end
-  end
+  world:update(dt)
 end
 
 function love.draw()
-  love.graphics.setColor(WHITE)
+  love.graphics.setShader(globalShader)
 
-  love.graphics.setShader(shader)
-
-  love.graphics.draw(background.canvas)
-  love.graphics.draw(terrain.canvas)
-
-  person:draw()
+  world:draw()
 
   love.graphics.setShader()
+end
+
+function love.keyreleased( key )
+  if key == "s" then
+    if globalShader == nil then
+      globalShader = love.graphics.newShader("dither_shader.fs")
+    else
+      globalShader = nil
+    end
+  end
 end
 

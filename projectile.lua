@@ -15,6 +15,11 @@ function Projectile:new(x, y, angle, direction, power)
   self.time = 0
 end
 
+function Projectile:collidesWithTerrain(terrain)
+  local groundPoint = terrain:findHighestYPoint(self.x - self.radius, self.radius * 2)
+  return self.y >= groundPoint
+end
+
 function Projectile:update(dt)
   self.time = self.time + dt
 

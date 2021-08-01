@@ -15,6 +15,14 @@ function Background:new()
   self:generate()
 end
 
+function Background:update(dt)
+end
+
+function Background:draw()
+  love.graphics.setColor(WHITE)
+  love.graphics.draw(self.canvas)
+end
+
 function Background:generate()
   self.canvas:renderTo(function() 
     love.graphics.clear({ 0,0,0,0 })
