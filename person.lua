@@ -17,11 +17,19 @@ function Person:new(terrain)
 end
 
 function Person:update()
-  if not(self:isTouchingGround()) then
-    self:fall()
-  end
+  self:processGravity()
+end
 
-  self:snapToGroundIfBelow()
+function Person:processGravity()
+  local groundPoint = self.terrain:findHighestYPoint(self.x, self.width)
+  local footPoint = self.y + self.height
+  if footPoint < groundPoint - 1 then
+    self:fall()
+  elseif footPoint == groundPoint - 1 then
+    self.downwardVelocity = 0
+  else
+    self:snapToGroundIfBelow()
+  end
 end
 
 function Person:fall()
@@ -32,14 +40,12 @@ function Person:fall()
 end
 
 function Person:snapToGroundIfBelow()
-  local highestYPoint = self.terrain:findHighestYPoint(self.x, self.width)
-  if (self.y+self.height) >= highestYPoint then
-    self.y = (highestYPoint-1)-self.height
-  end
-end
+  local groundPoint = self.terrain:findHighestYPoint(self.x, self.width)
+  local footPoint = self.y + self.height
 
-function Person:isTouchingGround()
-  return (self.y+self.height) >= self.terrain:findHighestYPoint(self.x, self.width)-1
+  if footPoint > groundPoint - 1 then
+    self.y = (groundPoint - 1) - self.height
+  end
 end
 
 function Person:draw()
