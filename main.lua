@@ -12,6 +12,7 @@ function love.load()
   person = Person(terrain)
 
   ditherShader = love.graphics.newShader("dither_shader.fs")
+  shader = ditherShader
 end
 
 function love.update()
@@ -23,12 +24,20 @@ function love.keyreleased( key )
     terrain:generate()
     person.y = 1
   end
+
+  if key == "s" then
+    if shader == nil then
+      shader = ditherShader
+    else
+      shader = nil
+    end
+  end
 end
 
 function love.draw()
   love.graphics.setColor(WHITE)
 
-  love.graphics.setShader(ditherShader)
+  love.graphics.setShader(shader)
 
   love.graphics.draw(background.canvas)
   love.graphics.draw(terrain.canvas)

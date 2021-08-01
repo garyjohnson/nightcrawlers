@@ -28,9 +28,9 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
   }
 
   if(newColor < 0.01) {
-    return vec4(0.19, 0.18, 0.16, a);
+    return vec4(0.058, 0.058, 0.06, a);
   } else if (newColor > 0.99) {
-    return vec4(0.84, 0.83, 0.8, a);
+    return vec4(0.72, 0.72, 0.73, a);
   }
 }
 

@@ -33,6 +33,10 @@ function Terrain:generate()
 end
 
 function Terrain:findHighestYPoint(x, width)
+  if x < 0 or (x + width) > (WIDTH - 1) then
+    return HEIGHT
+  end
+
   local cachedValue = self.cachedYPoints["" .. x .. ":" .. (x+width)]
   if cachedValue then
     return cachedValue
@@ -48,6 +52,11 @@ function Terrain:findHighestYPoint(x, width)
   while min <= max do
     anyFound, anyAbove = false
     mid = math.floor((max+min)/2)
+
+    if (mid - 1) < 0 or mid >= HEIGHT then
+      mid = clamp(0, mid, HEIGHT)
+      break
+    end
 
     for xPos = x, (x+width) do
       _,_,_,aboveA = self.imageData:getPixel(x, mid-1)
