@@ -1,4 +1,5 @@
 require "global_vars"
+require "math_utils"
 
 Object = require "classic"
 Terrain = Object:extend()
@@ -6,9 +7,13 @@ Terrain = Object:extend()
 function Terrain:new()
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
   self:generate()
+
+  self.cachedYPoints = {}
 end
 
 function Terrain:generate()
+  self.cachedYPoints = {}
+
   self.canvas:renderTo(function() 
     love.graphics.clear({ 0,0,0,0 })
 
@@ -25,4 +30,47 @@ function Terrain:generate()
   end);
 
   self.imageData = self.canvas:newImageData()
+end
+
+function Terrain:findHighestYPoint(x, width)
+  local cachedValue = self.cachedYPoints["" .. x .. ":" .. (x+width)]
+  if cachedValue then
+    return cachedValue
+  end
+
+  local min = 0
+  local max = HEIGHT
+
+  local r,g,b,a = 0
+  local mid = 0
+  local anyFound, anyAbove = false
+
+  while min <= max do
+    anyFound, anyAbove = false
+    mid = math.floor((max+min)/2)
+
+    for xPos = x, (x+width) do
+      _,_,_,aboveA = self.imageData:getPixel(x, mid-1)
+      _,_,_,a = self.imageData:getPixel(x, mid)
+      if aboveA > 0 then
+        anyAbove = true
+      end
+      if a > 0 then
+        anyFound = true
+      end
+    end
+
+    if anyFound and not(anyAbove) then
+      break
+    end
+
+    if anyFound then
+      max = mid-1
+    else
+      min = mid+1
+    end
+  end
+
+  self.cachedYPoints["" .. x .. ":" .. (x+width)] = mid-1
+  return mid-1
 end

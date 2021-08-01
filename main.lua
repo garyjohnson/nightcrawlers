@@ -7,7 +7,6 @@ function love.load()
   love.window.setMode(WIDTH, HEIGHT)
 
   terrain = Terrain()
-  terrain:generate()
 
   background = Background()
   person = Person(terrain)
@@ -22,6 +21,7 @@ end
 function love.keyreleased( key )
   if key == "r" then
     terrain:generate()
+    person.y = 1
   end
 end
 
