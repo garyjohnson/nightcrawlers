@@ -20,7 +20,6 @@ function Person:new(terrain)
   self.name = "Gary"
 
   self.downwardVelocity = 0
-  self.gravityAcceleration = 100
 
   self.movementSpeed = 25
   self.direction = 1
@@ -135,7 +134,7 @@ function Person:isTouchingGround()
 end
 
 function Person:fall(dt)
-  self.downwardVelocity = self.downwardVelocity + (self.gravityAcceleration * dt)
+  self.downwardVelocity = self.downwardVelocity + (GRAVITY_ACCELERATION * dt)
   self.y = self.y + self.downwardVelocity
 
   self:snapToGroundIfBelow()
