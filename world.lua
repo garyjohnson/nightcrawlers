@@ -21,9 +21,11 @@ function World:update(dt)
   World.super.update(self, dt)
 end
 
-function love.keyreleased( key )
+function World:onKeyReleased(key)
+  World.super.onKeyReleased(self, key)
+
   if key == "r" then
-    terrain:generate()
-    person.y = 1
+    self.terrain:generate()
+    self.person.y = 1
   end
 end

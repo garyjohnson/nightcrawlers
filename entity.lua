@@ -6,14 +6,26 @@ function Entity:new()
 end
 
 function Entity:update(dt)
-  for i, entity in pairs(self.entities) do
-    entity[2]:update(dt)
-  end
+  self:eachChild(function(entity)
+    entity:update(dt)
+  end)
 end
 
 function Entity:draw()
+  self:eachChild(function(entity)
+    entity:draw()
+  end)
+end
+
+function Entity:onKeyReleased(key)
+  self:eachChild(function(entity)
+    entity:onKeyReleased(key)
+  end)
+end
+
+function Entity:eachChild(func)
   for _, entity in pairs(self.entities) do
-    entity[2]:draw()
+    func(entity[2])
   end
 end
 

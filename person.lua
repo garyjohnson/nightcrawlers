@@ -71,7 +71,15 @@ function Person:fireProjectile()
     self:removeEntity(projectile)
   end
 
-  local projectile = Projectile(self.world, handleProjectileHit, self.reticle.x, self.reticle.y, self.reticleAngle, self.direction, self.weaponCharge.power)
+  local projectile = Projectile(
+    self.world,
+    handleProjectileHit,
+    self.x + (self.width / 2) + (self.direction*self.width/2),
+    self.y,
+    self.reticleAngle,
+    self.direction,
+    self.weaponCharge.power
+  )
   self:addEntity(projectile)
 end
 

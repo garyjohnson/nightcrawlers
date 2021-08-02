@@ -22,7 +22,7 @@ function love.draw()
   love.graphics.setShader()
 end
 
-function love.keyreleased( key )
+function love.keyreleased(key)
   if key == "s" then
     if globalShader == nil then
       globalShader = love.graphics.newShader("dither_shader.fs")
@@ -30,5 +30,7 @@ function love.keyreleased( key )
       globalShader = nil
     end
   end
+
+  world:onKeyReleased(key)
 end
 
