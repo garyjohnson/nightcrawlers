@@ -128,21 +128,20 @@ function Person:processInput(dt)
 end
 
 function Person:processGravity(dt)
-  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
-  local footPoint = self.y + self.height
-  if footPoint < groundPoint - 1 then
+  if not(self:isTouchingGround()) then
     self:fall(dt)
-  elseif footPoint == groundPoint - 1 then
-    self.downwardVelocity = 0
   else
+    self.downwardVelocity = 0
     self:snapToGroundIfBelow()
   end
 end
 
 function Person:isTouchingGround()
-  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
-  local footPoint = self.y + self.height
-  return footPoint == groundPoint - 1
+  if self.y + self.height >= HEIGHT - 1 then
+    return true
+  end
+
+  return self.world.terrain:isColliding(self.x, self.y + self.height + 1, self.width, 1)
 end
 
 function Person:fall(dt)
@@ -153,10 +152,11 @@ function Person:fall(dt)
 end
 
 function Person:snapToGroundIfBelow()
-  local groundPoint = self.world.terrain:findHighestYPoint(self.x, self.width)
-  local footPoint = self.y + self.height
+  if self.y + self.height > HEIGHT then
+    self.y = HEIGHT - self.height - 1
+  end
 
-  if footPoint > groundPoint - 1 then
-    self.y = (groundPoint - 1) - self.height
+  if self.y == HEIGHT - self.height - 1 or self.world.terrain:isColliding(self.x, self.y + self.height, self.width, 1) then
+    self.y = self.world.terrain:getEmptyYPosAbove(self.x, self.y + self.height, self.width) - self.height
   end
 end

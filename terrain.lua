@@ -9,7 +9,6 @@ function Terrain:new()
 
   self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
   self:generate()
-  self.cachedYPoints = {}
 end
 
 function Terrain:draw()
@@ -20,8 +19,6 @@ function Terrain:draw()
 end
 
 function Terrain:generate()
-  self.cachedYPoints = {}
-
   self.canvas:renderTo(function() 
     love.graphics.clear({ 0,0,0,0 })
 
@@ -40,8 +37,63 @@ function Terrain:generate()
   self.imageData = self.canvas:newImageData()
 end
 
+function Terrain:getEmptyYPosAbove(x, y, width)
+  y = math.min(y, HEIGHT)
+
+  local yPos = math.max(0, math.floor(y))
+  local anyFound = false
+
+  while yPos > 0 do
+    anyFound = false
+
+    for xPos = x, (x + width) do
+      _,_,_,a = self.imageData:getPixel(xPos, yPos)
+      if a > 0 then
+        anyFound = true
+        break
+      end
+    end
+
+    if anyFound == false then
+      return yPos
+    end
+
+    yPos = yPos - 1
+  end
+
+  return yPos
+end
+
+function Terrain:isColliding(x, y, width, height)
+  x = math.floor(x)
+  y = math.floor(y)
+  width = math.floor(width)
+  height = math.floor(height)
+
+  if x < 0 or (x + width) > (WIDTH - 1) then
+    return false
+  end
+
+  if y < 0 or (y + height) > (HEIGHT - 1) then
+    return false
+  end
+
+  for xPos = x, (x+width) do
+    for yPos = y, (y+height) do
+      _,_,_,a = self.imageData:getPixel(xPos, yPos)
+      if a > 0 then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
 function Terrain:hit(x, y, radius)
-  self.cachedYPoints = {}
+  x = math.floor(x)
+  y = math.floor(y)
+  radius = math.floor(radius)
 
   self.canvas:renderTo(function() 
     love.graphics.setBlendMode('replace')
@@ -56,11 +108,6 @@ end
 function Terrain:findHighestYPoint(x, width)
   if x < 0 or (x + width) > (WIDTH - 1) then
     return HEIGHT
-  end
-
-  local cachedValue = self.cachedYPoints["" .. x .. ":" .. (x+width)]
-  if cachedValue then
-    return cachedValue
   end
 
   local min = 0
@@ -80,8 +127,8 @@ function Terrain:findHighestYPoint(x, width)
     end
 
     for xPos = x, (x+width) do
-      _,_,_,aboveA = self.imageData:getPixel(x, mid-1)
-      _,_,_,a = self.imageData:getPixel(x, mid)
+      _,_,_,aboveA = self.imageData:getPixel(xPos, mid-1)
+      _,_,_,a = self.imageData:getPixel(xPos, mid)
       if aboveA > 0 then
         anyAbove = true
       end
@@ -101,6 +148,5 @@ function Terrain:findHighestYPoint(x, width)
     end
   end
 
-  self.cachedYPoints["" .. x .. ":" .. (x+width)] = mid-1
   return mid-1
 end

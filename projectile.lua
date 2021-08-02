@@ -28,7 +28,7 @@ function Projectile:update(dt)
   self.x = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   self.y = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
 
-  if self:collidesWithTerrain(self.world.terrain) then
+  if self.world.terrain:isColliding(self.x+1, self.y+1, (self.radius*2)-1, (self.radius*2)-1) then
     self.world.terrain:hit(self.x, self.y, 25)
     self.hitCallback(self)
   end
