@@ -38,15 +38,32 @@ function Terrain:generate()
 end
 
 function Terrain:getEmptyYPosAbove(x, y, width)
-  y = math.min(y, HEIGHT)
+  x = math.floor(x)
+  y = math.floor(y)
+  width = math.floor(width)
 
-  local yPos = math.max(0, math.floor(y))
+  if x < 0 or (x + width) >= WIDTH then
+    print("x: " .. x)
+    return nil
+  end
+
+  if y < 0 or y >= HEIGHT then
+    print("y: " .. y)
+    return nil
+  end
+
+  local yPos = y
+
   local anyFound = false
 
   while yPos > 0 do
     anyFound = false
 
     for xPos = x, (x + width) do
+      if xPos < 0 or xPos >= WIDTH or yPos < 0 or yPos >= HEIGHT then
+        print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
+      end
+
       _,_,_,a = self.imageData:getPixel(xPos, yPos)
       if a > 0 then
         anyFound = true
@@ -70,16 +87,16 @@ function Terrain:isColliding(x, y, width, height)
   width = math.floor(width)
   height = math.floor(height)
 
-  if x < 0 or (x + width) > (WIDTH - 1) then
-    return false
+  if x < 0 or (x + width) >= WIDTH then
+    return true
   end
 
-  if y < 0 or (y + height) > (HEIGHT - 1) then
-    return false
+  if y < 0 or (y + height) >= HEIGHT then
+    return true
   end
 
-  for xPos = x, (x+width) do
-    for yPos = y, (y+height) do
+  for yPos = (y+height), y, -1 do
+    for xPos = x, (x+width) do
       _,_,_,a = self.imageData:getPixel(xPos, yPos)
       if a > 0 then
         return true
@@ -88,6 +105,37 @@ function Terrain:isColliding(x, y, width, height)
   end
 
   return false
+end
+
+function Terrain:findHighestYPoint(x, y, width, height)
+  x = math.floor(x)
+  y = math.floor(y)
+  width = math.floor(width)
+  height = math.floor(height)
+
+  if x < 0 or (x + width) >= WIDTH then
+    return nil
+  end
+
+  if y < 0 or y + height >= HEIGHT then
+    return nil
+  end
+
+  local rowEmpty = true
+  for yPos = (y+height), y, -1 do
+    for xPos = x, (x+width) do
+      _,_,_,a = self.imageData:getPixel(xPos, yPos)
+      if a > 0 then
+        rowEmpty = false
+      end
+    end
+
+    if rowEmpty then
+      return yPos
+    end
+  end
+
+  return nil
 end
 
 function Terrain:hit(x, y, radius)
@@ -103,50 +151,4 @@ function Terrain:hit(x, y, radius)
   end);
 
   self.imageData = self.canvas:newImageData()
-end
-
-function Terrain:findHighestYPoint(x, width)
-  if x < 0 or (x + width) > (WIDTH - 1) then
-    return HEIGHT
-  end
-
-  local min = 0
-  local max = HEIGHT
-
-  local r,g,b,a = 0
-  local mid = 0
-  local anyFound, anyAbove = false
-
-  while min <= max do
-    anyFound, anyAbove = false
-    mid = math.floor((max+min)/2)
-
-    if (mid - 1) < 0 or mid >= HEIGHT then
-      mid = clamp(0, mid, HEIGHT)
-      break
-    end
-
-    for xPos = x, (x+width) do
-      _,_,_,aboveA = self.imageData:getPixel(xPos, mid-1)
-      _,_,_,a = self.imageData:getPixel(xPos, mid)
-      if aboveA > 0 then
-        anyAbove = true
-      end
-      if a > 0 then
-        anyFound = true
-      end
-    end
-
-    if anyFound and not(anyAbove) then
-      break
-    end
-
-    if anyFound then
-      max = mid-1
-    else
-      min = mid+1
-    end
-  end
-
-  return mid-1
 end

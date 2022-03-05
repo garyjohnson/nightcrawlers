@@ -87,6 +87,40 @@ function Person:canMove()
   return self.weaponCharge.power == 0
 end
 
+function Person:move(dt)
+  if not(self:canMove()) then
+    print("move: can't move!")
+    return
+  end
+
+  local desiredX = self.x + (self.movementSpeed * dt * self.direction)
+
+  local topY = self.world.terrain:findHighestYPoint(desiredX, self.y, self.width, self.height)
+  if topY == nil then
+    topY = self.y
+  end
+
+  local maxClimb = 6
+
+  if ((topY-self.height) - self.y) < maxClimb then
+    if not(self.world.terrain:isColliding(desiredX, topY-self.height, self.width, self.height)) then
+      self.x = desiredX
+      self.y = topY
+    else
+      print("move:colliding at desired position!")
+    end
+  else
+    print("move:above max climb!")
+  end
+end
+
+function Person:fall(dt)
+  self.downwardVelocity = self.downwardVelocity + (GRAVITY_ACCELERATION * dt)
+  self.y = self.y + self.downwardVelocity
+
+  self:snapToGroundIfBelow()
+end
+
 function Person:processInput(dt)
   if not(self:isTouchingGround()) then
     return
@@ -94,16 +128,10 @@ function Person:processInput(dt)
 
   if love.keyboard.isDown('left') then
     self.direction = -1
-
-    if self:canMove() then
-      self.x = self.x + (self.movementSpeed * dt * self.direction)
-    end
+    self:move(dt)
   elseif love.keyboard.isDown('right') then
     self.direction = 1
-
-    if self:canMove() then
-      self.x = self.x + (self.movementSpeed * dt * self.direction)
-    end
+    self:move(dt)
   end
 
   if love.keyboard.isDown('up') then
@@ -141,22 +169,25 @@ function Person:isTouchingGround()
     return true
   end
 
-  return self.world.terrain:isColliding(self.x, self.y + self.height + 1, self.width, 1)
-end
-
-function Person:fall(dt)
-  self.downwardVelocity = self.downwardVelocity + (GRAVITY_ACCELERATION * dt)
-  self.y = self.y + self.downwardVelocity
-
-  self:snapToGroundIfBelow()
+  t = self.world.terrain:isColliding(self.x, self.y + self.height, self.width, 1)
+  if not(t) then
+    print("is not touching ground at " .. self.y + self.height)
+  end
+  return t
 end
 
 function Person:snapToGroundIfBelow()
   if self.y + self.height > HEIGHT then
     self.y = HEIGHT - self.height - 1
+    return
   end
 
-  if self.y == HEIGHT - self.height - 1 or self.world.terrain:isColliding(self.x, self.y + self.height, self.width, 1) then
-    self.y = self.world.terrain:getEmptyYPosAbove(self.x, self.y + self.height, self.width) - self.height
+  if self.world.terrain:isColliding(self.x, self.y, self.width, self.height) then
+    local yPosAbove = self.world.terrain:getEmptyYPosAbove(self.x, self.y + self.height, self.width)
+    if yPosAbove == nil then
+      print("yPosAbove nil, x:" .. self.x .. " y:" .. self.y .. " width:" .. self.width .. " height:" .. self.height)
+      return
+    end
+    self.y = yPosAbove - self.height
   end
 end
