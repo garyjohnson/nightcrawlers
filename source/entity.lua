@@ -1,7 +1,6 @@
-Object = require "classic"
-Entity = Object:extend()
+class('Entity').extends(Object)
 
-function Entity:new()
+function Entity:init()
   self.entities = {}
 end
 

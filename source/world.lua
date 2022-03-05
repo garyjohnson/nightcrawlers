@@ -1,13 +1,18 @@
-require "global_vars"
-require "entity"
-require "terrain"
-require "background"
-require "person"
+import "CoreLibs/object"
+import "CoreLibs/graphics"
 
-World = Entity:extend()
+local gfx <const> = playdate.graphics
 
-function World:new()
-  World.super.new(self)
+import "global_vars"
+import "entity"
+import "terrain"
+import "background"
+import "person"
+
+class('World').extends(Entity)
+
+function World:init()
+  World.super.init(self)
 
   self.terrain = Terrain()
   self.person = Person(self)

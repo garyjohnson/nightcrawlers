@@ -1,14 +1,19 @@
-require "global_vars"
-require "reticle"
-require "weapon_charge"
-require "projectile"
-require "math_utils"
-require "entity"
+import "CoreLibs/object"
+import "CoreLibs/graphics"
 
-Person = Entity:extend()
+local gfx <const> = playdate.graphics
 
-function Person:new(world)
-  Person.super.new(self)
+import "global_vars"
+import "reticle"
+import "weapon_charge"
+import "projectile"
+import "math_utils"
+import "entity"
+
+class('Person').extends(Entity)
+
+function Person:init(world)
+  Person.super.init(self)
 
   self.world = world
 
@@ -56,13 +61,13 @@ function Person:draw()
   self.weaponCharge:draw()
   self.reticle:draw()
 
-  love.graphics.setColor(WHITE)
-  love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
-  love.graphics.setColor(BLACK)
-  love.graphics.rectangle('fill', self.x+1, self.y+1, self.width-2, self.height-2)
+  gfx.setColor(gfx.kColorBlack)
+  gfx.fillRect(self.x, self.y, self.width, self.height)
+  gfx.setColor(gfx.kColorWhite)
+  gfx.fillRect(self.x+1, self.y+1, self.width-2, self.height-2)
 
-  love.graphics.setColor(WHITE)
-  love.graphics.printf(self.name, self.x-20, self.y - 20, self.width+40, "center")
+  gfx.setColor(gfx.kColorBlack)
+  gfx.drawText(self.name, self.x-20, self.y - 20)
 end
 
 
@@ -121,26 +126,26 @@ function Person:fall(dt)
   self:snapToGroundIfBelow()
 end
 
-function Person:processInput(dt)
+function Person:processInput(dt, direction)
   if not(self:isTouchingGround()) then
     return
   end
 
-  if love.keyboard.isDown('left') then
+  if playdate.buttonIsPressed(playdate.kButtonLeft) then
     self.direction = -1
     self:move(dt)
-  elseif love.keyboard.isDown('right') then
+  elseif playdate.buttonIsPressed(playdate.kButtonRight) then
     self.direction = 1
     self:move(dt)
   end
 
-  if love.keyboard.isDown('up') then
+  if playdate.buttonIsPressed(playdate.kButtonUp) then
     self.reticleAngle = self.reticleAngle - (self.reticleSpeed * dt)
-  elseif love.keyboard.isDown('down') then
+  elseif playdate.buttonIsPressed(playdate.kButtonDown) then
     self.reticleAngle = self.reticleAngle + (self.reticleSpeed * dt)
   end
 
-  if love.keyboard.isDown('space') then
+  if playdate.buttonIsPressed(playdate.kButtonA) then
     self.weaponCharge:charge()
   else
     if(self.weaponCharge.power > 0) then

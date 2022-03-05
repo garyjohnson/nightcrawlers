@@ -1,11 +1,16 @@
-require "global_vars"
-require "math_utils"
-require "entity"
+import "CoreLibs/object"
+import "CoreLibs/graphics"
 
-WeaponCharge = Entity:extend()
+local gfx <const> = playdate.graphics
 
-function WeaponCharge:new()
-  WeaponCharge.super.new(self)
+import "global_vars"
+import "math_utils"
+import "entity"
+
+class('WeaponCharge').extends(Entity)
+
+function WeaponCharge:init()
+  WeaponCharge.super.init(self)
 
   self.x = 0
   self.y = 0
@@ -46,12 +51,11 @@ function WeaponCharge:draw()
 
   local jitter = 0
   if self.power == self.maxPower then
-    jitter = (love.math.random() * 3) - 1.5
+    jitter = (math.random() * 3) - 1.5
   end
 
-  love.graphics.setColor(DARK_GREY)
-  love.graphics.polygon(
-    'fill',
+  gfx.setColor(gfx.kColorBlack)
+  gfx.fillPolygon(
     self.x + jitter,
     self.y + jitter,
     self.topFarX + jitter,
@@ -59,7 +63,7 @@ function WeaponCharge:draw()
     self.bottomFarX + jitter,
     self.bottomFarY + jitter
   )
-  love.graphics.circle('fill', self.farX + jitter, self.farY + jitter, self.radius)
+  gfx.drawCircleAtPoint(self.farX + jitter, self.farY + jitter, self.radius)
 end
 
 function WeaponCharge:cancel()

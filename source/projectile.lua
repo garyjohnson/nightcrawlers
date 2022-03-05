@@ -1,10 +1,15 @@
-require "global_vars"
-require "entity"
+import "CoreLibs/object"
+import "CoreLibs/graphics"
 
-Projectile = Entity:extend()
+local gfx <const> = playdate.graphics
 
-function Projectile:new(world, hitCallback, x, y, angle, direction, power)
-  Projectile.super.new(self)
+import "global_vars"
+import "entity"
+
+class('Projectile').extends(Entity)
+
+function Projectile:init(world, hitCallback, x, y, angle, direction, power)
+  Projectile.super.init(self)
 
   self.world = world
   self.hitCallback = hitCallback
@@ -37,8 +42,8 @@ end
 function Projectile:draw()
   Projectile.super.draw(self)
 
-  love.graphics.setColor(WHITE)
-  love.graphics.circle("line", self.x, self.y, self.radius)
+  gfx.setColor(gfx.kColorWhite)
+  gfx.drawCircleAtPoint(self.x, self.y, self.radius)
 end
 
 function Projectile:collidesWithTerrain(terrain)

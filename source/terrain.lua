@@ -1,40 +1,43 @@
-require "global_vars"
-require "math_utils"
-require "entity"
+import "CoreLibs/object"
+import "CoreLibs/graphics"
 
-Terrain = Entity:extend()
+local gfx <const> = playdate.graphics
 
-function Terrain:new()
-  Terrain.super.new(self)
+import "global_vars"
+import "math_utils"
+import "entity"
 
-  self.canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
+class('Terrain').extends(Entity)
+
+function Terrain:init()
+  Terrain.super.init(self)
+
+  self.canvas = gfx.image.new(WIDTH, HEIGHT)
   self:generate()
 end
 
 function Terrain:draw()
   Terrain.super.draw(self)
 
-  love.graphics.setColor(WHITE)
-  love.graphics.draw(self.canvas)
+  gfx.setColor(gfx.kColorWhite)
+  self.canvas:draw(0, 0)
 end
 
 function Terrain:generate()
-  self.canvas:renderTo(function() 
-    love.graphics.clear({ 0,0,0,0 })
+  gfx.pushContext(self.canvas)
+  gfx.clear(gfx.kColorWhite)
 
-    local maxDrift = 5
-    local y = HEIGHT - (love.math.random() * (HEIGHT / 3)) - (HEIGHT / 6)
+  local maxDrift = 5
+  local y = HEIGHT - (math.random() * (HEIGHT / 3)) - (HEIGHT / 6)
 
-    for x = 0, WIDTH, 2 do
-      love.graphics.setColor(WHITE)
-      love.graphics.rectangle('fill', x, y, 2, y+2)
-      love.graphics.setColor(OFF_WHITE)
-      love.graphics.rectangle('fill', x, y+2, 2, HEIGHT - y)
-      y = y + ((love.math.random() * (maxDrift*2)) - maxDrift)
-    end
-  end);
-
-  self.imageData = self.canvas:newImageData()
+  for x = 0, WIDTH, 2 do
+    gfx.setColor(gfx.kColorWhite)
+    gfx.fillRect(x, y, 2, y+2)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(x, y+2, 2, HEIGHT - y)
+    y = y + ((math.random() * (maxDrift*2)) - maxDrift)
+  end
+  gfx.popContext()
 end
 
 function Terrain:getEmptyYPosAbove(x, y, width)
@@ -64,8 +67,7 @@ function Terrain:getEmptyYPosAbove(x, y, width)
         print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
       end
 
-      _,_,_,a = self.imageData:getPixel(xPos, yPos)
-      if a > 0 then
+      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
         anyFound = true
         break
       end
@@ -97,8 +99,7 @@ function Terrain:isColliding(x, y, width, height)
 
   for yPos = (y+height), y, -1 do
     for xPos = x, (x+width) do
-      _,_,_,a = self.imageData:getPixel(xPos, yPos)
-      if a > 0 then
+      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
         return true
       end
     end
@@ -124,8 +125,7 @@ function Terrain:findHighestYPoint(x, y, width, height)
   local rowEmpty = true
   for yPos = (y+height), y, -1 do
     for xPos = x, (x+width) do
-      _,_,_,a = self.imageData:getPixel(xPos, yPos)
-      if a > 0 then
+      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
         rowEmpty = false
       end
     end
@@ -144,11 +144,9 @@ function Terrain:hit(x, y, radius)
   radius = math.floor(radius)
 
   self.canvas:renderTo(function() 
-    love.graphics.setBlendMode('replace')
-    love.graphics.setColor({ 0, 0, 0, 0 })
-    love.graphics.circle('fill', x, y, radius)
-    love.graphics.setBlendMode('alpha')
+    --gfx.setBlendMode('replace')
+    gfx.setColor(gfx.kColorClear)
+    gfx.fillCircleAtPoint(x, y, radius)
+    --gfx.setBlendMode('alpha')
   end);
-
-  self.imageData = self.canvas:newImageData()
 end
