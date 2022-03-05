@@ -80,5 +80,5 @@ bayer = {
   threshold = threshold,
   generateFillLUT = generateFillLUT,
   getFill = function (n) return fillLUT[n] end,
-  toByets = toBytes
+  toBytes = toBytes
 }

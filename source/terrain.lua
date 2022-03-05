@@ -19,13 +19,13 @@ end
 function Terrain:draw()
   Terrain.super.draw(self)
 
-  gfx.setColor(gfx.kColorWhite)
+  gfx.setColor(gfx.kColorClear)
   self.canvas:draw(0, 0)
 end
 
 function Terrain:generate()
   gfx.pushContext(self.canvas)
-  gfx.clear(gfx.kColorWhite)
+  gfx.clear(gfx.kColorClear)
 
   local maxDrift = 5
   local y = HEIGHT - (math.random() * (HEIGHT / 3)) - (HEIGHT / 6)
@@ -143,10 +143,10 @@ function Terrain:hit(x, y, radius)
   y = math.floor(y)
   radius = math.floor(radius)
 
-  self.canvas:renderTo(function() 
-    --gfx.setBlendMode('replace')
-    gfx.setColor(gfx.kColorClear)
-    gfx.fillCircleAtPoint(x, y, radius)
-    --gfx.setBlendMode('alpha')
-  end);
+  gfx.pushContext(self.canvas)
+  --gfx.setBlendMode('replace')
+  gfx.setColor(gfx.kColorClear)
+  gfx.fillCircleAtPoint(x, y, radius)
+  --gfx.setBlendMode('alpha')
+  gfx.popContext()
 end
