@@ -54,7 +54,7 @@ function WeaponCharge:draw()
     jitter = (math.random() * 3) - 1.5
   end
 
-  gfx.setColor(gfx.kColorBlack)
+  gfx.setColor(gfx.kColorWhite)
   gfx.fillPolygon(
     self.x + jitter,
     self.y + jitter,
@@ -63,7 +63,7 @@ function WeaponCharge:draw()
     self.bottomFarX + jitter,
     self.bottomFarY + jitter
   )
-  gfx.drawCircleAtPoint(self.farX + jitter, self.farY + jitter, self.radius)
+  gfx.fillCircleAtPoint(self.farX + jitter, self.farY + jitter, self.radius)
 end
 
 function WeaponCharge:cancel()

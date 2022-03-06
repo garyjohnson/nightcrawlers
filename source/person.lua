@@ -64,13 +64,14 @@ function Person:draw()
   self.weaponCharge:draw()
   self.reticle:draw()
 
-  gfx.setColor(gfx.kColorBlack)
-  gfx.fillRect(self.x, self.y, self.width, self.height)
   gfx.setColor(gfx.kColorWhite)
+  gfx.fillRect(self.x, self.y, self.width, self.height)
+  gfx.setColor(gfx.kColorBlack)
   gfx.fillRect(self.x+1, self.y+1, self.width-2, self.height-2)
 
-  gfx.setColor(gfx.kColorBlack)
-  gfx.drawText(self.name, self.x-20, self.y - 20)
+  gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+  gfx.drawTextAligned(self.name, self.x + (self.width/2), self.y - 20, kTextAlignment.center)
+  gfx.setImageDrawMode(gfx.kDrawModeCopy)
 end
 
 

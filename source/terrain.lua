@@ -6,11 +6,14 @@ local gfx <const> = playdate.graphics
 import "global_vars"
 import "math_utils"
 import "entity"
+import "bayer"
 
 class('Terrain').extends(Entity)
 
 function Terrain:init()
   Terrain.super.init(self)
+
+  bayer.generateFillLUT()
 
   self.canvas = gfx.image.new(WIDTH, HEIGHT)
   self:generate()
@@ -31,9 +34,9 @@ function Terrain:generate()
   local y = HEIGHT - (math.random() * (HEIGHT / 3)) - (HEIGHT / 6)
 
   for x = 0, WIDTH, 2 do
-    gfx.setColor(gfx.kColorWhite)
-    gfx.fillRect(x, y, 2, y+2)
     gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(x, y, 2, y+2)
+    gfx.setPattern(bayer.getFill(10))
     gfx.fillRect(x, y+2, 2, HEIGHT - y)
     y = y + ((math.random() * (maxDrift*2)) - maxDrift)
   end
@@ -144,9 +147,7 @@ function Terrain:hit(x, y, radius)
   radius = math.floor(radius)
 
   gfx.pushContext(self.canvas)
-  --gfx.setBlendMode('replace')
   gfx.setColor(gfx.kColorClear)
   gfx.fillCircleAtPoint(x, y, radius)
-  --gfx.setBlendMode('alpha')
   gfx.popContext()
 end

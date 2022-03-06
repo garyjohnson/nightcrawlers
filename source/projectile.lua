@@ -42,7 +42,7 @@ end
 function Projectile:draw()
   Projectile.super.draw(self)
 
-  gfx.setColor(gfx.kColorBlack)
+  gfx.setColor(gfx.kColorWhite)
   gfx.drawCircleAtPoint(self.x, self.y, self.radius)
 end
 

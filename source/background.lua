@@ -15,8 +15,8 @@ function Background:init()
   self.canvas = gfx.image.new(WIDTH, HEIGHT)
 
   self.step = 1
-  self.startValue = 63
-  self.endValue = 0
+  self.startValue = 50
+  self.endValue = 63
   self.startY = 0
   self.endY = HEIGHT/2.5
 

@@ -19,8 +19,8 @@ end
 function Reticle:draw()
   Reticle.super.draw(self)
 
-  gfx.setColor(gfx.kColorBlack)
+  gfx.setColor(gfx.kColorWhite)
   gfx.drawLine(self.x - self.radius, self.y, self.x + self.radius, self.y)
   gfx.drawLine(self.x, self.y - self.radius, self.x, self.y + self.radius)
-  gfx.drawCircleAtPoint(self.x, self.y, self.radius-1)
+  gfx.drawCircleAtPoint(self.x, self.y+1, self.radius-1)
 end
