@@ -12,10 +12,13 @@ function load()
 end
 
 function playdate.update()
-  local dt = playdate.getElapsedTime() / 100
+  local dt = playdate.getElapsedTime()
+
   world:update(dt)
   world:draw()
   playdate.timer.updateTimers()
+
+  playdate.resetElapsedTime()
 end
 
 load()
