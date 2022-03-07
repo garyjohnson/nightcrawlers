@@ -118,15 +118,17 @@ function Terrain:findHighestYPoint(x, y, width, height)
   height = math.floor(height)
 
   if x < 0 or (x + width) >= WIDTH then
+    print("x nopes")
     return nil
   end
 
-  if y < 0 or y + height >= HEIGHT then
+  if y < 0 or (y + height) >= HEIGHT then
+    print("y nopes")
     return nil
   end
 
   local rowEmpty = true
-  for yPos = (y+height), y, -1 do
+  for yPos = y+height, y, -1 do
     for xPos = x, (x+width) do
       if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
         rowEmpty = false

@@ -1,5 +1,6 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
+import "CoreLibs/crank"
 
 local gfx <const> = playdate.graphics
 
@@ -39,6 +40,8 @@ function Person:init(world)
   self.reticleAngle = degToRad(0)
   self.reticleMinAngle = degToRad(-90)
   self.reticleMaxAngle = degToRad(90)
+
+  self.crankMultiplier = 0.005
 end
 
 function Person:update(dt)
@@ -61,8 +64,10 @@ end
 function Person:draw()
   Person.super.draw(self)
 
-  self.weaponCharge:draw()
-  self.reticle:draw()
+  if playdate.isCrankDocked() == false then
+    self.weaponCharge:draw()
+    self.reticle:draw()
+  end
 
   gfx.setColor(gfx.kColorWhite)
   gfx.fillRect(self.x, self.y, self.width, self.height)
@@ -135,6 +140,9 @@ function Person:processInput(dt, direction)
     return
   end
 
+  self.reticle.hidden = playdate.isCrankDocked()
+  self.reticle.hidden = playdate.isCrankDocked()
+
   if playdate.buttonIsPressed(playdate.kButtonLeft) then
     self.direction = -1
     self:move(dt)
@@ -143,19 +151,27 @@ function Person:processInput(dt, direction)
     self:move(dt)
   end
 
-  if playdate.buttonIsPressed(playdate.kButtonUp) then
-    self.reticleAngle = self.reticleAngle - (self.reticleSpeed * dt)
-  elseif playdate.buttonIsPressed(playdate.kButtonDown) then
-    self.reticleAngle = self.reticleAngle + (self.reticleSpeed * dt)
-  end
-
-  if playdate.buttonIsPressed(playdate.kButtonA) then
-    self.weaponCharge:charge()
-  else
-    if(self.weaponCharge.power > 0) then
-      self:fireProjectile()
+  --if playdate.buttonIsPressed(playdate.kButtonUp) then
+  --  self.reticleAngle = self.reticleAngle - (self.reticleSpeed * dt)
+  --elseif playdate.buttonIsPressed(playdate.kButtonDown) then
+  --  self.reticleAngle = self.reticleAngle + (self.reticleSpeed * dt)
+  --end
+  
+  if playdate.isCrankDocked() == false then
+    local change, _ = playdate.getCrankChange()
+    self.reticleAngle = self.reticleAngle + (change * self.crankMultiplier * self.direction)
+    if self.reticleAngle < degToRad(-90) or self.reticleAngle > degToRad(90) then 
+      self.direction = self.direction * -1
     end
-    self.weaponCharge:cancel()
+
+    if playdate.buttonIsPressed(playdate.kButtonA) then
+      self.weaponCharge:charge()
+    else
+      if(self.weaponCharge.power > 0) then
+        self:fireProjectile()
+      end
+      self.weaponCharge:cancel()
+    end
   end
 
   self.reticleAngle = clamp(self.reticleMinAngle, self.reticleAngle, self.reticleMaxAngle)
@@ -186,7 +202,8 @@ function Person:isTouchingGround()
 end
 
 function Person:snapToGroundIfBelow()
-  if self.y + self.height > HEIGHT then
+  if self.y + self.height >= HEIGHT then
+    print("snap to floor")
     self.y = HEIGHT - self.height - 1
     return
   end

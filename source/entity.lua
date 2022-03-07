@@ -2,6 +2,7 @@ class('Entity').extends(Object)
 
 function Entity:init()
   self.entities = {}
+  self.hidden = false
 end
 
 function Entity:update(dt)
@@ -12,7 +13,9 @@ end
 
 function Entity:draw()
   self:eachChild(function(entity)
-    entity:draw()
+    if entity.hidden == false then
+      entity:draw()
+    end
   end)
 end
 

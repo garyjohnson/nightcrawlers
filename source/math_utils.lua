@@ -1,4 +1,5 @@
 piDividedBy180 = math.pi / 180
+oneHundredEightyDividedByPi = 180 / math.pi
 
 function round(number)
   return math.floor(number + 0.5)
@@ -11,6 +12,10 @@ end
 
 function degToRad(deg)
   return deg * piDividedBy180
+end
+
+function radToDeg(rad)
+  return rad * oneHundredEightyDividedByPi
 end
 
 function distance(x1, y1, x2, y2)
