@@ -98,7 +98,7 @@ function Person:fireProjectile()
 end
 
 function Person:canMove()
-  return self.weaponCharge.power == 0
+  return self.weaponCharge.power == 0 or not(self:isTouchingGround())
 end
 
 function Person:move(dt)
