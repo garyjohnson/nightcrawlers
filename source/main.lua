@@ -6,6 +6,7 @@ import "global_vars"
 import "world"
 
 local gfx <const> = playdate.graphics
+local world = nil
 
 function load()
   world = World()
