@@ -1,12 +1,11 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-
-local gfx <const> = playdate.graphics
-
 import "global_vars"
 import "math_utils"
 import "entity"
 import "bayer"
+
+local gfx <const> = playdate.graphics
 
 class('Terrain').extends(Entity)
 
