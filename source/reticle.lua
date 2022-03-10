@@ -13,7 +13,7 @@ function Reticle:init()
 
   self.x = 0
   self.y = 0
-  self.radius = 6
+  self.radius = 7
 end
 
 function Reticle:draw()
@@ -22,5 +22,5 @@ function Reticle:draw()
   gfx.setColor(gfx.kColorWhite)
   gfx.drawLine(self.x - self.radius, self.y, self.x + self.radius, self.y)
   gfx.drawLine(self.x, self.y - self.radius, self.x, self.y + self.radius)
-  gfx.drawCircleAtPoint(self.x, self.y+1, self.radius-1)
+  gfx.drawCircleAtPoint(self.x + 0.5, self.y + 0.5, self.radius-1.5)
 end

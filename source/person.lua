@@ -53,8 +53,8 @@ function Person:update(dt)
   print("player x: " .. self.x)
   print("player y: " .. self.y)
 
-  self.reticle.x = self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle))
-  self.reticle.y = self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle))
+  self.reticle.x = round(self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
+  self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
 
   self.weaponCharge.direction = self.direction
   self.weaponCharge.x = self.x + (self.width / 2)
