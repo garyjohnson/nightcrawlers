@@ -26,7 +26,7 @@ function Water:init()
 
   -- we draw the wave a little below the screen extent so that there
   -- are no gaps in the bottom from the sine wave
-  self.canvas = gfx.image.new(WIDTH * 2, self.height + self.waveIntensity) 
+  self.canvas = gfx.image.new(WIDTH * 2, self.height + self.waveIntensity)
 
   self.animator = gfx.animator.new(3000, 0, self.waveWidth, playdate.easingFunctions.inOutSine)
   self.animator.repeatCount = -1
@@ -38,7 +38,10 @@ function Water:draw()
   gfx.pushContext(self.canvas)
   gfx.clear(gfx.kColorClear)
 
-  gfx.setPattern(bayer.getFill(47))
+  gfx.setPattern({
+    0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, -- pattern, all black
+    0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa  -- alpha mask, alternating transparent and solid (water transparency)
+  })
 
   gfx.fillRect(0, (self.waveIntensity * 2) + self.outlineStroke, WIDTH * 2, HEIGHT)
 
@@ -50,7 +53,7 @@ function Water:draw()
   for y = self.waveIntensity, self.waveIntensity + self.outlineStroke - 1, 1 do
     gfx.drawSineWave(-self.animator:currentValue(), y, WIDTH * 2, y, self.waveIntensity, self.waveIntensity, self.waveWidth)
   end
-  
+
 
   gfx.popContext()
 
