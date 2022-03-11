@@ -1,15 +1,15 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
+import "CoreLibs/sprites"
 import "CoreLibs/crank"
-
-local gfx <const> = playdate.graphics
-
 import "global_vars"
 import "reticle"
 import "weapon_charge"
 import "projectile"
 import "math_utils"
 import "entity"
+
+local gfx <const> = playdate.graphics
 
 class('Person').extends(Entity)
 
@@ -19,13 +19,13 @@ function Person:init(world)
   self.world = world
 
   self.reticle = Reticle()
+  self.reticle:setZIndex(self:getZIndex() + 90)
+  self.reticle:add()
+
   self.weaponCharge = WeaponCharge()
+  self.weaponCharge:setZIndex(self:getZIndex() + 100)
+  self.weaponCharge:add()
 
-  self:addEntity(self.weaponCharge, 1)
-  self:addEntity(self.reticle, 2)
-
-  self.x = 100
-  self.y = 1
   self.width = 8
   self.height = 16
   self.name = "Gary"
@@ -42,47 +42,57 @@ function Person:init(world)
   self.reticleMaxAngle = degToRad(90)
 
   self.crankMultiplier = 0.005
+
+  self:setImage(self:generateImage())
+  self:setCenter(0, 0)
+  self:moveTo(100, 1)
 end
 
-function Person:update(dt)
-  Person.super.update(self, dt)
+function Person:update()
+  Person.super.update(self)
+  
+  self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power == 0)
+  self.reticle:setVisible(not(playdate.isCrankDocked()))
 
+  local dt = playdate.getElapsedTime()
   self:processInput(dt)
   self:processGravity(dt)
 
-  print("player x: " .. self.x)
-  print("player y: " .. self.y)
+  self:moveTo(self.x, self.y)
 
-  self.reticle.x = round(self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
-  self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
-
-  self.weaponCharge.direction = self.direction
-  self.weaponCharge.x = self.x + (self.width / 2)
-  self.weaponCharge.y = self.y + 1
-end
-
-function Person:draw()
-  Person.super.draw(self)
-
-  if playdate.isCrankDocked() == false then
-    self.weaponCharge:draw()
-    self.reticle:draw()
+  if self.reticle:isVisible() then
+    self.reticle.x = round(self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
+    self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
   end
 
-  gfx.setColor(gfx.kColorWhite)
-  gfx.fillRect(self.x, self.y, self.width, self.height)
-  gfx.setColor(gfx.kColorBlack)
-  gfx.fillRect(self.x+1, self.y+1, self.width-2, self.height-2)
+  if self.weaponCharge:isVisible() then
+    self.weaponCharge.direction = self.direction
+    self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
+  end
+end
 
-  gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-  gfx.drawTextAligned(self.name, self.x + (self.width/2), self.y - 20, kTextAlignment.center)
-  gfx.setImageDrawMode(gfx.kDrawModeCopy)
+function Person:generateImage()
+  local image = gfx.image.new(self.width, self.height)
+  gfx.pushContext(image)
+
+  gfx.setColor(gfx.kColorWhite)
+  gfx.fillRect(0, 0, self.width, self.height)
+  gfx.setColor(gfx.kColorBlack)
+  gfx.fillRect(1, 1, self.width-2, self.height-2)
+
+  --gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+  --gfx.drawTextAligned(self.name, self.x + (self.width/2), self.y - 20, kTextAlignment.center)
+  --gfx.setImageDrawMode(gfx.kDrawModeCopy)
+
+  gfx.popContext()
+
+  return image
 end
 
 
 function Person:fireProjectile()
   function handleProjectileHit(projectile)
-    self:removeEntity(projectile)
+    projectile:remove()
   end
 
   local projectile = Projectile(
@@ -94,7 +104,8 @@ function Person:fireProjectile()
     self.direction,
     self.weaponCharge.power
   )
-  self:addEntity(projectile)
+
+  projectile:add()
 end
 
 function Person:canMove()

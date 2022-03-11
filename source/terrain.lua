@@ -14,19 +14,14 @@ function Terrain:init()
 
   bayer.generateFillLUT()
 
-  self.canvas = gfx.image.new(WIDTH, HEIGHT)
-  self:generate()
+  self:setImage(self:generateImage())
+  self:setCenter(0, 0)
 end
 
-function Terrain:draw()
-  Terrain.super.draw(self)
+function Terrain:generateImage()
+  local image = gfx.image.new(WIDTH, HEIGHT)
 
-  gfx.setColor(gfx.kColorClear)
-  self.canvas:draw(0, 0)
-end
-
-function Terrain:generate()
-  gfx.pushContext(self.canvas)
+  gfx.pushContext(image)
   gfx.clear(gfx.kColorClear)
 
   local maxDrift = 5
@@ -40,6 +35,8 @@ function Terrain:generate()
     y = y + ((math.random() * (maxDrift*2)) - maxDrift)
   end
   gfx.popContext()
+
+  return image
 end
 
 function Terrain:getEmptyYPosAbove(x, y, width)
@@ -69,7 +66,7 @@ function Terrain:getEmptyYPosAbove(x, y, width)
         print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
       end
 
-      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         anyFound = true
         break
       end
@@ -101,7 +98,7 @@ function Terrain:isColliding(x, y, width, height)
 
   for yPos = (y+height), y, -1 do
     for xPos = x, (x+width) do
-      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         return true
       end
     end
@@ -129,7 +126,7 @@ function Terrain:findHighestYPoint(x, y, width, height)
   local rowEmpty = true
   for yPos = y+height, y, -1 do
     for xPos = x, (x+width) do
-      if self.canvas:sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         rowEmpty = false
       end
     end
@@ -147,8 +144,10 @@ function Terrain:hit(x, y, radius)
   y = math.floor(y)
   radius = math.floor(radius)
 
-  gfx.pushContext(self.canvas)
+  gfx.pushContext(self:getImage())
   gfx.setColor(gfx.kColorClear)
   gfx.fillCircleAtPoint(x, y, radius)
   gfx.popContext()
+
+  gfx.sprite.addDirtyRect(x-radius, y-radius, x+radius, y+radius)
 end

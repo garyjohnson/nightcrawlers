@@ -1,13 +1,12 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
+import "CoreLibs/sprites"
+import "global_vars"
+import "bayer"
 
 local gfx <const> = playdate.graphics
 
-import "global_vars"
-import "entity"
-import "bayer"
-
-class('Background').extends(Entity)
+class('Background').extends(Object)
 
 function Background:init()
   Background.super.init(self)
@@ -20,20 +19,20 @@ function Background:init()
   self.startY = 0
   self.endY = HEIGHT/2.5
 
-  bayer.generateFillLUT()
-
+  bayer.generateFillLUT() -- initialize pattern fills
   self:generate()
+
 end
 
-function Background:draw()
-  Background.super.draw(self)
-
-  gfx.setColor(gfx.kColorWhite)
-  self.canvas:draw(0,0)
+function Background:draw(x, y, width, height)
+  gfx.setClipRect( x, y, width, height ) -- let's only draw the part of the screen that's dirty
+  self.canvas:draw(0, 0)
+  gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
 end
 
 function Background:generate()
   gfx.pushContext(self.canvas)
+
   gfx.clear(gfx.kColorWhite)
 
   local range = self.endValue - self.startValue
@@ -52,4 +51,6 @@ function Background:generate()
     gfx.setPattern(bayer.getFill(math.floor(colorValue)))
     gfx.fillRect(0, y, WIDTH, y + self.step)
   end
+
+  gfx.popContext()
 end

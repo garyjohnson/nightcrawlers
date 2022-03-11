@@ -1,11 +1,10 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-
-local gfx <const> = playdate.graphics
-
 import "global_vars"
 import "math_utils"
 import "entity"
+
+local gfx <const> = playdate.graphics
 
 class('WeaponCharge').extends(Entity)
 
@@ -26,26 +25,41 @@ function WeaponCharge:init()
   self.topFarY = 0
   self.bottomFarX = 0
   self.bottomFarY = 0
-  self.radius = 0
+  self.endRadius = 0
+  self.visible = false
+
+  self.radius = 50
+  self.width = self.radius * 2
+  self.height = self.radius * 2
+  self:setImage(gfx.image.new(self.width, self.height))
 end
 
-function WeaponCharge:update(dt)
-  WeaponCharge.super.update(self, dt)
+function WeaponCharge:setVisible(visible)
+  self.visible = visible
+end
 
-  self.farX = self.x + (self.power * self.direction * math.cos(self.angle))
-  self.farY = self.y + (self.power * math.sin(self.angle))
-  self.topFarX = self.x + (self.power * self.direction * math.cos(self.angle - degToRad(10)))
-  self.topFarY = self.y + (self.power * math.sin(self.angle - degToRad(10)))
-  self.bottomFarX = self.x + (self.power * self.direction * math.cos(self.angle + degToRad(10)))
-  self.bottomFarY = self.y + (self.power * math.sin(self.angle + degToRad(10)))
+function WeaponCharge:update()
+  WeaponCharge.super.update(self)
 
-  self.radius = distance(self.topFarX, self.topFarY, self.bottomFarX, self.bottomFarY) / 2 
+  self.farX = self.radius + (self.power * self.direction * math.cos(self.angle))
+  self.farY = self.radius + (self.power * math.sin(self.angle))
+  self.topFarX = self.radius + (self.power * self.direction * math.cos(self.angle - degToRad(10)))
+  self.topFarY = self.radius + (self.power * math.sin(self.angle - degToRad(10)))
+  self.bottomFarX = self.radius + (self.power * self.direction * math.cos(self.angle + degToRad(10)))
+  self.bottomFarY = self.radius + (self.power * math.sin(self.angle + degToRad(10)))
+
+  self.endRadius = distance(self.topFarX, self.topFarY, self.bottomFarX, self.bottomFarY) / 2 
+
+  if self:isVisible() then
+    self:draw()
+  end
 end
 
 function WeaponCharge:draw()
-  WeaponCharge.super.draw(self)
-
   if self.power == 0 then
+    gfx.pushContext(self:getImage())
+    gfx.clear(gfx.kColorClear)
+    gfx.popContext()
     return
   end
 
@@ -54,16 +68,21 @@ function WeaponCharge:draw()
     jitter = (math.random() * 3) - 1.5
   end
 
+  gfx.pushContext(self:getImage())
+
+  gfx.clear(gfx.kColorClear)
   gfx.setColor(gfx.kColorWhite)
   gfx.fillPolygon(
-    self.x + jitter,
-    self.y + jitter,
+    self.radius + jitter,
+    self.radius + jitter,
     self.topFarX + jitter,
     self.topFarY + jitter,
     self.bottomFarX + jitter,
     self.bottomFarY + jitter
   )
-  gfx.fillCircleAtPoint(self.farX + jitter, self.farY + jitter, self.radius)
+  gfx.fillCircleAtPoint(self.farX + jitter, self.farY + jitter, self.endRadius)
+
+  gfx.popContext()
 end
 
 function WeaponCharge:cancel()

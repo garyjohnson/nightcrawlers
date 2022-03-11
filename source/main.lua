@@ -13,12 +13,8 @@ function load()
 end
 
 function playdate.update()
-  local dt = playdate.getElapsedTime()
-
-  world:update(dt)
-  world:draw()
+  gfx.sprite.update()
   playdate.timer.updateTimers()
-
   playdate.resetElapsedTime()
 end
 
