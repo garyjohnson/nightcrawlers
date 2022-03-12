@@ -21,3 +21,23 @@ end
 function distance(x1, y1, x2, y2)
   return math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
 end
+
+function min(...)
+  local args = table.pack(...)
+  local min = args[1]
+  for _,value in pairs(args) do
+    min = math.min(min, value)
+  end
+
+  return min
+end
+
+function max(...)
+  local args = table.pack(...)
+  local max = args[1]
+  for _,value in pairs(args) do
+    max = math.max(max, value)
+  end
+
+  return max
+end

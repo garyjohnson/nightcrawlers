@@ -70,7 +70,7 @@ function Person:update()
     self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
   end
 
-  self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power == 0)
+  self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power > 0)
   if self.weaponCharge:isVisible() then
     self.weaponCharge.direction = self.direction
     self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
