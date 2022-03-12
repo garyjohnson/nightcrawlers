@@ -23,9 +23,10 @@ function Background:init()
 end
 
 function Background:draw(x, y, width, height)
-  gfx.setClipRect( x, y, width, height ) -- let's only draw the part of the screen that's dirty
+  gfx.pushContext()
+  gfx.setClipRect(x, y, width, height)
   self.canvas:draw(0, 0)
-  gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
+  gfx.clearClipRect()
 end
 
 function Background:generate()

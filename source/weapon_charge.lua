@@ -58,12 +58,13 @@ function WeaponCharge:update()
   self:setBounds(self.x - self.radius, self.y - self.radius, maxX + 3, maxY + 3)
 end
 
-function WeaponCharge:draw()
+function WeaponCharge:draw(x, y, width, height)
   if self.power == 0 then
     return
   end
 
   gfx.pushContext()
+  gfx.setClipRect( x, y, width, height )
   gfx.setColor(gfx.kColorWhite)
 
   gfx.fillPolygon(
@@ -77,6 +78,7 @@ function WeaponCharge:draw()
 
   gfx.fillCircleAtPoint(self.farX, self.farY, self.endRadius)
 
+  gfx.clearClipRect()
   gfx.popContext()
 end
 

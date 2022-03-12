@@ -27,8 +27,6 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power)
 end
 
 function Projectile:update()
-  Projectile.super.update(self)
-
   local dt = playdate.getElapsedTime()
   self.time = self.time + dt
 

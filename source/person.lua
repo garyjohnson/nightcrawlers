@@ -56,8 +56,6 @@ function Person:setZIndex(zIndex)
 end
 
 function Person:update()
-  Person.super.update(self)
-
   local dt = playdate.getElapsedTime()
   self:processInput(dt)
   self:processGravity(dt)

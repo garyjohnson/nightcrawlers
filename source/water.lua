@@ -30,8 +30,6 @@ function Water:init()
 end
 
 function Water:update()
-  Water.super.update(self)
-
   local value = self.animator:currentValue()
   local evenValue = value - (value % 2)
   self:moveTo(-evenValue, HEIGHT-self.height)

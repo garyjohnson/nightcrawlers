@@ -18,8 +18,6 @@ function Reticle:init()
 end
 
 function Reticle:update()
-  Reticle.super.update(self)
-
   self:moveTo(self.x, self.y)
 end
 
