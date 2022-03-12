@@ -19,9 +19,7 @@ function Background:init()
   self.startY = 0
   self.endY = HEIGHT/2.5
 
-  bayer.generateFillLUT() -- initialize pattern fills
   self:generate()
-
 end
 
 function Background:draw(x, y, width, height)

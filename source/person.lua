@@ -24,6 +24,7 @@ function Person:init(world)
 
   self.weaponCharge = WeaponCharge()
   self.weaponCharge:setZIndex(self:getZIndex() + 100)
+  self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
   self.weaponCharge:add()
 
   self.width = 8
@@ -48,11 +49,14 @@ function Person:init(world)
   self:moveTo(100, 1)
 end
 
+function Person:setZIndex(zIndex)
+  Person.super.setZIndex(self, zIndex)
+  self.reticle:setZIndex(zIndex + 90)
+  self.weaponCharge:setZIndex(zIndex + 100)
+end
+
 function Person:update()
   Person.super.update(self)
-  
-  self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power == 0)
-  self.reticle:setVisible(not(playdate.isCrankDocked()))
 
   local dt = playdate.getElapsedTime()
   self:processInput(dt)
@@ -60,11 +64,13 @@ function Person:update()
 
   self:moveTo(self.x, self.y)
 
+  self.reticle:setVisible(not(playdate.isCrankDocked()))
   if self.reticle:isVisible() then
     self.reticle.x = round(self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
     self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
   end
 
+  self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power == 0)
   if self.weaponCharge:isVisible() then
     self.weaponCharge.direction = self.direction
     self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
@@ -180,8 +186,8 @@ function Person:processInput(dt, direction)
     else
       if(self.weaponCharge.power > 0) then
         self:fireProjectile()
+        self.weaponCharge:cancel()
       end
-      self.weaponCharge:cancel()
     end
   end
 

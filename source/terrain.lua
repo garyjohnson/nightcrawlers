@@ -12,8 +12,6 @@ class('Terrain').extends(Entity)
 function Terrain:init()
   Terrain.super.init(self)
 
-  bayer.generateFillLUT()
-
   self:setImage(self:generateImage())
   self:setCenter(0, 0)
 end

@@ -4,11 +4,13 @@ import "CoreLibs/timer"
 
 import "global_vars"
 import "world"
+import "bayer"
 
 local gfx <const> = playdate.graphics
 local world = nil
 
 function load()
+  bayer.generateFillLUT()
   world = World()
 end
 
