@@ -31,8 +31,6 @@ function Person:init(world)
   self.height = 16
   self.name = "Gary"
 
-  self.downwardVelocity = 0
-
   self.movementSpeed = 25
   self.direction = 1
 
@@ -44,9 +42,78 @@ function Person:init(world)
 
   self.crankMultiplier = 0.005
 
+  self:resetMidairVars()
+
   self:setImage(self:generateImage())
   self:setCenter(0, 0)
   self:moveTo(100, 1)
+end
+
+function Person:fall()
+  print('falling!')
+  self.midairState = 'falling'
+  self.midairTime = 0
+  self.midairAngle = degToRad(90)
+  self.midairVelocity = 250
+  self.midairOriginX = self.x
+  self.midairOriginY = self.y
+end
+
+function Person:jump()
+  print('jumping!')
+  self.midairState = 'jumping'
+  self.midairTime = 0
+  self.midairAngle = degToRad(290)
+  -- what is this in units? pixels per second?
+  self.midairVelocity = 80
+  self.y = self.y - 1
+  self.midairOriginX = self.x
+  self.midairOriginY = self.y
+  -- need to kick off the ground
+  -- or we'll be considered landed
+end
+
+function Person:resetMidairVars()
+  print('not in midair anymore!')
+  self.midairState = 'none'
+  self.midairTime = 0
+  self.midairAngle = degToRad(0)
+  self.midairVelocity = 0
+  self.midairOriginX = 0
+  self.midairOriginY = 0
+end
+
+function Person:isJumping()
+  return self.midairState == 'jumping'
+end
+
+function Person:isFalling()
+  return self.midairState == 'falling'
+end
+
+function Person:isJumpingOrFalling()
+  return self:isJumping() or self:isFalling()
+end
+
+function Person:processMidairMovement(dt)
+  local isTouchingGround = self:isTouchingGround()
+
+  if self:isJumpingOrFalling() then
+    self.midairTime = self.midairTime + dt
+  end
+
+  if not(isTouchingGround) and not(self:isJumpingOrFalling()) then
+    self:fall()
+  end
+
+  if not(isTouchingGround) then
+    self.x = self.midairOriginX + (self.midairVelocity * math.cos(self.midairAngle) * self.midairTime * self.direction)
+    self.y = self.midairOriginY + (self.midairVelocity * math.sin(self.midairAngle) * self.midairTime + (200 * self.midairTime * self.midairTime / 2.0))
+  elseif self:isJumpingOrFalling() then
+    self:resetMidairVars()
+  end
+
+  self:snapToGroundIfBelow()
 end
 
 function Person:setZIndex(zIndex)
@@ -57,8 +124,8 @@ end
 
 function Person:update()
   local dt = playdate.getElapsedTime()
+  self:processMidairMovement(dt)
   self:processInput(dt)
-  self:processGravity(dt)
 
   self:moveTo(self.x, self.y)
 
@@ -113,7 +180,7 @@ function Person:fireProjectile()
 end
 
 function Person:canMove()
-  return self.weaponCharge.power == 0 or not(self:isTouchingGround())
+  return self.weaponCharge.power == 0 or not(self:isJumpingOrFalling())
 end
 
 function Person:move(dt)
@@ -143,15 +210,8 @@ function Person:move(dt)
   end
 end
 
-function Person:fall(dt)
-  self.downwardVelocity = self.downwardVelocity + (GRAVITY_ACCELERATION * dt)
-  self.y = self.y + self.downwardVelocity
-
-  self:snapToGroundIfBelow()
-end
-
 function Person:processInput(dt, direction)
-  if not(self:isTouchingGround()) then
+  if self:isJumpingOrFalling() then
     return
   end
 
@@ -164,6 +224,10 @@ function Person:processInput(dt, direction)
   elseif playdate.buttonIsPressed(playdate.kButtonRight) then
     self.direction = 1
     self:move(dt)
+  end
+
+  if playdate.buttonIsPressed(playdate.kButtonA) then
+    self:jump()
   end
 
   --if playdate.buttonIsPressed(playdate.kButtonUp) then
@@ -179,7 +243,7 @@ function Person:processInput(dt, direction)
       self.direction = self.direction * -1
     end
 
-    if playdate.buttonIsPressed(playdate.kButtonA) then
+    if playdate.buttonIsPressed(playdate.kButtonB) then
       self.weaponCharge:charge()
     else
       if(self.weaponCharge.power > 0) then
@@ -193,15 +257,6 @@ function Person:processInput(dt, direction)
   self.weaponCharge.angle = self.reticleAngle
 
   self:snapToGroundIfBelow()
-end
-
-function Person:processGravity(dt)
-  if not(self:isTouchingGround()) then
-    self:fall(dt)
-  else
-    self.downwardVelocity = 0
-    self:snapToGroundIfBelow()
-  end
 end
 
 function Person:isTouchingGround()
