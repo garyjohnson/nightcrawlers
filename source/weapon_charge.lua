@@ -30,7 +30,7 @@ function WeaponCharge:update()
     self.farY = 0
     self.radiusWithJitter = 0
 
-    self:setBounds(self.x - self.radius, self.y - self.radius, self.radius * 2, self.radius * 2)
+    self:setBounds(self.x - self.radius, self.y - self.radius, 0, 0)
     return
   end
 
