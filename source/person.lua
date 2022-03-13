@@ -54,7 +54,7 @@ function Person:fall()
   self.midairState = 'falling'
   self.midairTime = 0
   self.midairAngle = degToRad(90)
-  self.midairVelocity = 250
+  self.midairVelocity = 300
   self.midairOriginX = self.x
   self.midairOriginY = self.y
 end
@@ -63,9 +63,9 @@ function Person:jump()
   print('jumping!')
   self.midairState = 'jumping'
   self.midairTime = 0
-  self.midairAngle = degToRad(290)
+  self.midairAngle = degToRad(310)
   -- what is this in units? pixels per second?
-  self.midairVelocity = 80
+  self.midairVelocity = 70
   self.y = self.y - 1
   self.midairOriginX = self.x
   self.midairOriginY = self.y
@@ -108,7 +108,7 @@ function Person:processMidairMovement(dt)
 
   if not(isTouchingGround) then
     self.x = self.midairOriginX + (self.midairVelocity * math.cos(self.midairAngle) * self.midairTime * self.direction)
-    self.y = self.midairOriginY + (self.midairVelocity * math.sin(self.midairAngle) * self.midairTime + (200 * self.midairTime * self.midairTime / 2.0))
+    self.y = self.midairOriginY + (self.midairVelocity * math.sin(self.midairAngle) * self.midairTime + (GRAVITY_ACCELERATION * self.midairTime * self.midairTime / 2.0))
   elseif self:isJumpingOrFalling() then
     self:resetMidairVars()
   end
@@ -230,12 +230,6 @@ function Person:processInput(dt, direction)
     self:jump()
   end
 
-  --if playdate.buttonIsPressed(playdate.kButtonUp) then
-  --  self.reticleAngle = self.reticleAngle - (self.reticleSpeed * dt)
-  --elseif playdate.buttonIsPressed(playdate.kButtonDown) then
-  --  self.reticleAngle = self.reticleAngle + (self.reticleSpeed * dt)
-  --end
-  
   if playdate.isCrankDocked() == false then
     local change, _ = playdate.getCrankChange()
     self.reticleAngle = self.reticleAngle + (change * self.crankMultiplier * self.direction)
