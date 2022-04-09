@@ -7,7 +7,7 @@ import "world"
 import "bayer"
 
 local gfx <const> = playdate.graphics
-local world = nil
+world = nil
 
 function load()
   bayer.generateFillLUT()
@@ -15,6 +15,7 @@ function load()
 end
 
 function playdate.update()
+  world:update()
   gfx.sprite.update()
   playdate.timer.updateTimers()
   playdate.resetElapsedTime()

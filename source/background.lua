@@ -3,6 +3,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "global_vars"
 import "bayer"
+import "camera_utils"
 
 local gfx <const> = playdate.graphics
 
@@ -24,8 +25,11 @@ end
 
 function Background:draw(x, y, width, height)
   gfx.pushContext()
-  gfx.setClipRect(x, y, width, height)
-  self.canvas:draw(0, 0)
+
+  gfx.setClipRect(cameraTransformRect(x, y, width, height))
+  local drawOrigin = cameraTransformPoint(CENTER.x, CENTER.y)
+  self.canvas:drawWithTransform(getCameraTransform(), drawOrigin.x, drawOrigin.y)
+
   gfx.clearClipRect()
 end
 

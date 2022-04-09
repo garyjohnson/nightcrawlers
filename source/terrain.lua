@@ -12,8 +12,8 @@ class('Terrain').extends(Entity)
 function Terrain:init()
   Terrain.super.init(self)
 
-  self:setImage(self:generateImage())
   self:setCenter(0, 0)
+  self:setImage(self:generateImage())
 end
 
 function Terrain:generateImage()
