@@ -27,8 +27,7 @@ function Background:draw(x, y, width, height)
   gfx.pushContext()
 
   gfx.setClipRect(cameraTransformRect(x, y, width, height))
-  local drawOrigin = cameraTransformPoint(CENTER.x, CENTER.y)
-  self.canvas:drawWithTransform(getCameraTransform(), drawOrigin.x, drawOrigin.y)
+  self.canvas:drawWithTransform(getCameraTransform(), 0, 0)
 
   gfx.clearClipRect()
 end

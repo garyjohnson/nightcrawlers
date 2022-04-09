@@ -4,47 +4,40 @@ import "CoreLibs/sprites"
 import "camera_utils"
 
 local gfx <const> = playdate.graphics
+local geom <const> = playdate.geometry
 
 class('Entity').extends(gfx.sprite)
 
 function Entity:init(...)
   Entity.super.init(self, ...)
+  self.originalImage = nil
+  self.logicalX = 0
+  self.logicalY = 0
+  self.transform = geom.affineTransform.new()
 end
 
-function Entity:draw(x, y, width, height)
-  print(self.className .. ' draw at ' .. self.x .. ", " .. self.y)
-  gfx.pushContext()
-  --gfx.setClipRect( cameraTransformRect(x, y, width, height ))
-  local drawOffset = cameraTransformPoint(self.x, self.y)
-  gfx.setDrawOffset(drawOffset.x, drawOffset.y)
-
-  local imageWidth, imageHeight = self.originalImage:getSize()
-  local centerXPercent, centerYPercent = self:getCenter()
-
-  --self.originalImage:drawAnchored(0, 0, centerXPercent, centerYPercent)
-  local point = cameraTransformPoint((imageWidth * centerXPercent) + (imageWidth/2), (imageHeight * centerYPercent) + (imageHeight/2))
-  self.originalImage:drawWithTransform(getCameraTransform(), point.x, point.y)
-
-  gfx.setDrawOffset(0, 0)
-  --gfx.clearClipRect()
-  gfx.popContext()
+function Entity:getLogicalPos()
 end
 
-function Entity:setImage(image)
-  self.originalImage = image
+function Entity:setLogicalPos(x, y)
+  self.logicalX = x
+  self.logicalY = y
 
-  local width, height = image:getSize()
-  self:updateBounds()
+  local transformedPoint =  self.transform:transformedPoint(geom.point.new(self.logicalX, self.logicalY))
+  self:moveTo(transformedPoint.x, transformedPoint.y)
 end
 
-function Entity:updateBounds()
+function Entity:updateTransformedImage()
   if self.originalImage ~= nil then
-    local width, height = self.originalImage:getSize()
-    --self:setBounds(cameraTransformRect(self.x, self.y, width+1, height+1))
-    self:setBounds(self.x, self.y, width+1, height+1)
+    self:setImage(self.originalImage:transformedImage(self.transform))
   end
 end
 
-function Entity:getImage()
+function Entity:getOriginalImage()
   return self.originalImage
+end
+
+function Entity:setOriginalImage(image)
+  self.originalImage = image
+  self:updateTransformedImage()
 end

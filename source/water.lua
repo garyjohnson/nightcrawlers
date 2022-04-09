@@ -24,15 +24,15 @@ function Water:init()
   self.animator = gfx.animator.new(3000, 0, self.waveWidth, playdate.easingFunctions.inOutSine)
   self.animator.repeatCount = -1
 
-  self:setImage(self:generateImage())
+  self:setOriginalImage(self:generateImage())
   self:setCenter(0, 0)
-  self:moveTo(0, HEIGHT-self.height)
+  self:setLogicalPos(0, HEIGHT-self.height)
 end
 
 function Water:update()
   local value = self.animator:currentValue()
   local evenValue = value - (value % 2)
-  self:moveTo(-evenValue, HEIGHT-self.height)
+  self:setLogicalPos(-evenValue, HEIGHT-self.height)
 end
 
 function Water:generateImage()

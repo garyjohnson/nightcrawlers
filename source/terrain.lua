@@ -13,7 +13,7 @@ function Terrain:init()
   Terrain.super.init(self)
 
   self:setCenter(0, 0)
-  self:setImage(self:generateImage())
+  self:setOriginalImage(self:generateImage())
 end
 
 function Terrain:generateImage()
@@ -64,7 +64,7 @@ function Terrain:getEmptyYPosAbove(x, y, width)
         print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
       end
 
-      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
         anyFound = true
         break
       end
@@ -96,7 +96,7 @@ function Terrain:isColliding(x, y, width, height)
 
   for yPos = (y+height), y, -1 do
     for xPos = x, (x+width) do
-      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
         return true
       end
     end
@@ -124,7 +124,7 @@ function Terrain:findHighestYPoint(x, y, width, height)
   local rowEmpty = true
   for yPos = y+height, y, -1 do
     for xPos = x, (x+width) do
-      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
         rowEmpty = false
       end
     end
@@ -142,7 +142,7 @@ function Terrain:hit(x, y, radius)
   y = math.floor(y)
   radius = math.floor(radius)
 
-  gfx.pushContext(self:getImage())
+  gfx.pushContext(self:getOriginalImage())
   gfx.setColor(gfx.kColorClear)
   gfx.fillCircleAtPoint(x, y, radius)
   gfx.popContext()

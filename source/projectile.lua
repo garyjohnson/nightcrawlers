@@ -23,7 +23,7 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power)
   self.radius = 3
   self.time = 0
 
-  self:setImage(self:generateImage())
+  self:setOriginalImage(self:generateImage())
 end
 
 function Projectile:update()
@@ -32,7 +32,7 @@ function Projectile:update()
 
   self.x = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   self.y = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
-  self:moveTo(self.x, self.y)
+  self:setLogicalPos(self.x, self.y)
 
   if self.world.terrain:isColliding(self.x+1, self.y+1, (self.radius*2)-1, (self.radius*2)-1) then
     self.world.terrain:hit(self.x, self.y, 25)

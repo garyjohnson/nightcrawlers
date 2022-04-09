@@ -12,13 +12,13 @@ function Reticle:init()
 
   self.x = 0
   self.y = 0
-  self.radius = 7
+  self.radius = 8 --was 7, temporary due to https://devforum.play.date/t/playdate-graphics-image-transformedimage-crashes-simulator-with-certain-size-images/4456
 
-  self:setImage(self:generateImage())
+  self:setOriginalImage(self:generateImage())
 end
 
 function Reticle:update()
-  self:moveTo(self.x, self.y)
+  self:setLogicalPos(self.x, self.y)
 end
 
 function Reticle:generateImage()

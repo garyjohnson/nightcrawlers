@@ -26,8 +26,15 @@ function Camera:update()
       self.transform = geom.affineTransform.new()
       self.transform:scale(self.scale)
 
-      playdate.graphics.sprite.performOnAllSprites(Entity.updateBounds)
+      playdate.graphics.sprite.performOnAllSprites(updateTransform)
       playdate.graphics.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
     end
+  end
+end
+
+function updateTransform(sprite)
+  if sprite:isa(Entity) then
+    sprite.transform = getCameraTransform()
+    sprite:updateTransformedImage()
   end
 end
