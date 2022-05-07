@@ -148,4 +148,6 @@ function Terrain:hit(x, y, radius)
   gfx.popContext()
 
   gfx.sprite.addDirtyRect(x-radius, y-radius, x+radius, y+radius)
+
+  self:updateTransformedImage()
 end

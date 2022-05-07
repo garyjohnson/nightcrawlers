@@ -1,5 +1,6 @@
 import "CoreLibs/object"
 import "CoreLibs/crank"
+import "camera_utils"
 
 local geom <const> = playdate.geometry
 
@@ -14,6 +15,10 @@ end
 
 function Camera:getTransform()
   return self.transform
+end
+
+function Camera:getScale()
+  return self.scale
 end
 
 function Camera:update()
@@ -34,6 +39,7 @@ end
 
 function updateTransform(sprite)
   if sprite:isa(Entity) then
+    --sprite:setScale(getCameraScale())
     sprite.transform = getCameraTransform()
     sprite:updateTransformedImage()
   end

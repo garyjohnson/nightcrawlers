@@ -6,6 +6,7 @@ import "bayer"
 import "camera_utils"
 
 local gfx <const> = playdate.graphics
+local geom <const> = playdate.geometry
 
 class('Background').extends(Object)
 
@@ -26,8 +27,13 @@ end
 function Background:draw(x, y, width, height)
   gfx.pushContext()
 
-  gfx.setClipRect(cameraTransformRect(x, y, width, height))
-  self.canvas:drawWithTransform(getCameraTransform(), 0, 0)
+  --gfx.setClipRect(cameraTransformRect(x, y, width, height))
+  gfx.setClipRect(x, y, width, height)
+
+  local transformedPoint =  getCameraTransform():transformedPoint(geom.point.new(WIDTH/2, HEIGHT/2))
+  self.canvas:drawWithTransform(getCameraTransform(), transformedPoint.x, transformedPoint.y)
+
+  --self.canvas:drawScaled(0, 0, getCameraScale())
 
   gfx.clearClipRect()
 end

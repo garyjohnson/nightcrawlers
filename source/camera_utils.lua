@@ -8,6 +8,14 @@ function getCameraTransform()
   return geom.affineTransform.new()
 end
 
+function getCameraScale()
+  if world ~= nil then
+    return world.camera:getScale()
+  end
+
+  return 1.0
+end
+
 function cameraTransformPoint(x, y)
   return getCameraTransform():transformedPoint(geom.point.new(x, y))
 end
