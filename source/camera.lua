@@ -22,19 +22,6 @@ function Camera:getScale()
 end
 
 function Camera:update()
-  if playdate.isCrankDocked() == false then
-    local change, _ = playdate.getCrankChange()
-    if change ~= 0 then
-      local scaleChange = change * 0.001
-      self.scale = self.scale + scaleChange
-
-      self.transform = geom.affineTransform.new()
-      self.transform:scale(self.scale)
-
-      playdate.graphics.sprite.performOnAllSprites(updateTransform)
-      playdate.graphics.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
-    end
-  end
 end
 
 function updateTransform(sprite)
