@@ -124,9 +124,8 @@ function Person:setZIndex(zIndex)
 end
 
 function Person:update()
-  local dt = playdate.getElapsedTime()
-  self:processMidairMovement(dt)
-  self:processInput(dt)
+  self:processMidairMovement(deltaTime)
+  self:processInput(deltaTime)
 
   self:setLogicalPos(self.logicalX, self.logicalY)
 

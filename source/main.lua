@@ -7,7 +7,9 @@ import "world"
 import "bayer"
 
 local gfx <const> = playdate.graphics
+local time = playdate.getCurrentTimeMilliseconds()
 world = nil
+deltaTime = 0
 
 function load()
   bayer.generateFillLUT()
@@ -18,8 +20,9 @@ function playdate.update()
   world:update()
   gfx.sprite.update()
   playdate.timer.updateTimers()
-  playdate.resetElapsedTime()
-end
 
+  deltaTime = (playdate.getCurrentTimeMilliseconds() - time) / 1000.0
+  time = playdate.getCurrentTimeMilliseconds()
+end
 
 load()

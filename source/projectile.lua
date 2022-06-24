@@ -26,8 +26,7 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power)
 end
 
 function Projectile:update()
-  local dt = playdate.getElapsedTime()
-  self.time = self.time + dt
+  self.time = self.time + deltaTime
 
   local logX = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   local logY = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
