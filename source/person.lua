@@ -129,6 +129,7 @@ function Person:update()
   self:processInput(dt)
 
   self:setLogicalPos(self.logicalX, self.logicalY)
+  world.camera:panTo(self.logicalX, self.logicalY)
 
   self.reticle:setVisible(not(playdate.isCrankDocked()))
   if self.reticle:isVisible() then

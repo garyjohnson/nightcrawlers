@@ -12,24 +12,27 @@ class('Terrain').extends(Entity)
 function Terrain:init()
   Terrain.super.init(self)
 
+  self.levelWidth = 1000
+  self.levelHeight = 300
+
   self:setCenter(0, 0)
   self:setOriginalImage(self:generateImage())
 end
 
 function Terrain:generateImage()
-  local image = gfx.image.new(WIDTH, HEIGHT)
+  local image = gfx.image.new(self.levelWidth, self.levelHeight)
 
   gfx.pushContext(image)
   gfx.clear(gfx.kColorClear)
 
   local maxDrift = 5
-  local y = HEIGHT - (math.random() * (HEIGHT / 3)) - (HEIGHT / 6)
+  local y = self.levelHeight - (math.random() * (self.levelHeight / 3)) - (self.levelHeight / 6)
 
-  for x = 0, WIDTH, 2 do
+  for x = 0, self.levelWidth, 2 do
     gfx.setColor(gfx.kColorBlack)
     gfx.fillRect(x, y, 2, y+2)
     gfx.setPattern(bayer.getFill(10))
-    gfx.fillRect(x, y+2, 2, HEIGHT - y)
+    gfx.fillRect(x, y+2, 2, self.levelHeight - y)
     y = y + ((math.random() * (maxDrift*2)) - maxDrift)
   end
   gfx.popContext()
@@ -42,12 +45,12 @@ function Terrain:getEmptyYPosAbove(x, y, width)
   y = math.floor(y)
   width = math.floor(width)
 
-  if x < 0 or (x + width) >= WIDTH then
+  if x < 0 or (x + width) >= self.levelWidth then
     print("x: " .. x)
     return nil
   end
 
-  if y < 0 or y >= HEIGHT then
+  if y < 0 or y >= self.levelHeight then
     print("y: " .. y)
     return nil
   end
@@ -60,7 +63,7 @@ function Terrain:getEmptyYPosAbove(x, y, width)
     anyFound = false
 
     for xPos = x, (x + width) do
-      if xPos < 0 or xPos >= WIDTH or yPos < 0 or yPos >= HEIGHT then
+      if xPos < 0 or xPos >= self.levelWidth or yPos < 0 or yPos >= self.levelHeight then
         print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
       end
 
@@ -86,11 +89,11 @@ function Terrain:isColliding(x, y, width, height)
   width = math.floor(width)
   height = math.floor(height)
 
-  if x < 0 or (x + width) >= WIDTH then
+  if x < 0 or (x + width) >= self.levelWidth then
     return true
   end
 
-  if y < 0 or (y + height) >= HEIGHT then
+  if y < 0 or (y + height) >= self.levelHeight then
     return true
   end
 
@@ -111,12 +114,12 @@ function Terrain:findHighestYPoint(x, y, width, height)
   width = math.floor(width)
   height = math.floor(height)
 
-  if x < 0 or (x + width) >= WIDTH then
+  if x < 0 or (x + width) >= self.levelWidth then
     print("x nopes")
     return nil
   end
 
-  if y < 0 or (y + height) >= HEIGHT then
+  if y < 0 or (y + height) >= self.levelHeight then
     print("y nopes")
     return nil
   end
