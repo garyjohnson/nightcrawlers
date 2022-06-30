@@ -25,4 +25,8 @@ function playdate.update()
   time = playdate.getCurrentTimeMilliseconds()
 end
 
+function playdate.deviceDidUnlock()
+  gfx.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
+end
+
 load()
