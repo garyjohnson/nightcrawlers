@@ -1,7 +1,0 @@
-name=nightcrawlers
-author=Useful Bits
-description=It's like that other game, but worse!
-bundleID=io.usefulbits.nightcrawlers
-version=0.1
-buildNumber=4
-imagePath=source/images/title.png
