@@ -5,10 +5,10 @@ import "entity"
 
 local gfx <const> = playdate.graphics
 
-class('Projectile').extends(Entity)
+class('ExplosionParticle').extends(Entity)
 
-function Projectile:init(world, hitCallback, x, y, angle, direction, power, radius)
-  Projectile.super.init(self)
+function ExplosionParticle:init(world, hitCallback, x, y, angle, direction, power, radius)
+  ExplosionParticle.super.init(self)
 
   self.world = world
   self.hitCallback = hitCallback
@@ -20,25 +20,25 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power, radi
   self.power = power * 8
   self.radius = radius
   self.time = 0
+  self.halfLife = 1000
 
   self:setLogicalPos(x, y)
   self:setOriginalImage(self:generateImage())
 end
 
-function Projectile:update()
+function ExplosionParticle:update()
   self.time = self.time + deltaTime
 
   local logX = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   local logY = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
   self:setLogicalPos(logX, logY)
 
-  if self.world.terrain:isColliding(self.logicalX+1, self.logicalY+1, (self.radius*2)-1, (self.radius*2)-1) then
-    self.world.terrain:hit(self.logicalX, self.logicalY, 25)
+  if self.time > self.halfLife then
     self.hitCallback(self)
   end
 end
 
-function Projectile:generateImage()
+function ExplosionParticle:generateImage()
   local image = gfx.image.new(self.radius * 2, self.radius * 2)
 
   gfx.pushContext(image)
@@ -47,9 +47,4 @@ function Projectile:generateImage()
   gfx.popContext()
 
   return image
-end
-
-function Projectile:collidesWithTerrain(terrain)
-  local groundPoint = terrain:findHighestYPoint(self.logicalX - self.radius, self.radius * 2)
-  return self.logicalY >= groundPoint
 end

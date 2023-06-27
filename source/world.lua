@@ -24,7 +24,7 @@ function World:init()
     end
   )
 
-  self.terrain = Terrain()
+  self.terrain = Terrain(self)
   self.terrain:setZIndex(1000)
 
   self.person = Person(self)

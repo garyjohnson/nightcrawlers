@@ -4,13 +4,16 @@ import "global_vars"
 import "math_utils"
 import "entity"
 import "bayer"
+import "explosion"
 
 local gfx <const> = playdate.graphics
 
 class('Terrain').extends(Entity)
 
-function Terrain:init()
+function Terrain:init(world)
   Terrain.super.init(self)
+
+  self.world = world
 
   self:setCenter(0, 0)
   self:setOriginalImage(self:generateImage())
@@ -138,9 +141,19 @@ function Terrain:findHighestYPoint(x, y, width, height)
 end
 
 function Terrain:hit(x, y, radius)
+  print("Terrain:hit: x:" .. x .. ", y:" .. y)
   x = math.floor(x)
   y = math.floor(y)
   radius = math.floor(radius)
+
+  local howMuchDirt = self:howMuchDirt(x, y, radius)
+  local explosion = Explosion(
+    self.world,
+    x,
+    y,
+    howMuchDirt
+  )
+  explosion:add()
 
   gfx.pushContext(self:getOriginalImage())
   gfx.setColor(gfx.kColorClear)
@@ -150,4 +163,28 @@ function Terrain:hit(x, y, radius)
   gfx.sprite.addDirtyRect(x-radius, y-radius, x+radius, y+radius)
 
   self:updateTransformedImage()
+end
+
+function Terrain:howMuchDirt(x,y,radius)
+  local x = math.floor(x)
+  local y = math.floor(y)
+  local radius = math.floor(radius)
+  local image = self:getOriginalImage()
+
+  local topY = math.max(0, y-radius)
+  local bottomY = math.min(HEIGHT, y+radius)
+
+  local leftX = math.max(0, x-radius)
+  local rightX = math.min(WIDTH, x+radius)
+
+  local dirtCount = 0
+  for yPos = topY, bottomY, 1 do
+    for xPos = leftX, rightX, 1 do
+      if image:sample(xPos, yPos) ~= gfx.kColorClear then
+        dirtCount = dirtCount+1
+      end
+    end
+  end
+
+  return dirtCount
 end

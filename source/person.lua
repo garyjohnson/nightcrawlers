@@ -31,7 +31,6 @@ function Person:init(world)
   self.weaponCharge:setLogicalPos(self.logicalX + (self.logicalWidth / 2), self.logicalY + 1)
   self.weaponCharge:add()
 
-
   self.movementSpeed = 25
   self.direction = 1
 
@@ -173,7 +172,8 @@ function Person:fireProjectile()
     self.logicalY,
     self.reticleAngle,
     self.direction,
-    self.weaponCharge.power
+    self.weaponCharge.power,
+    3 --radius
   )
 
   projectile:add()
