@@ -46,12 +46,12 @@ function Terrain:getEmptyYPosAbove(x, y, width)
   width = math.floor(width)
 
   if x < 0 or (x + width) >= WIDTH then
-    print("x: " .. x)
+    --print("x: " .. x)
     return nil
   end
 
   if y < 0 or y >= HEIGHT then
-    print("y: " .. y)
+    --print("y: " .. y)
     return nil
   end
 
@@ -147,6 +147,7 @@ function Terrain:hit(x, y, angle, direction, radius)
   radius = math.floor(radius)
 
   local howMuchDirt = self:howMuchDirt(x, y, radius)
+  playdate.graphics.sprite.setAlwaysRedraw(true)
   local explosion = Explosion(
     self.world,
     x,
@@ -178,8 +179,6 @@ function Terrain:howMuchDirt(x,y,radius)
 
   local leftX = math.max(0, x-radius)
   local rightX = math.min(WIDTH, x+radius)
-
-  print("y1: " .. topY .. ",y2: " .. bottomY .. ",x1: " .. leftX .. ",x2: " .. rightX)
 
   local dirtCount = 0
   for yPos = topY, bottomY, 1 do

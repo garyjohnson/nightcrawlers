@@ -1,6 +1,5 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
-import "CoreLibs/sprites"
 import "global_vars"
 import "bayer"
 import "camera_utils"
@@ -32,8 +31,6 @@ function Background:draw(x, y, width, height)
 
   local transformedPoint =  getCameraTransform():transformedPoint(geom.point.new(WIDTH/2, HEIGHT/2))
   self.canvas:drawWithTransform(getCameraTransform(), transformedPoint.x, transformedPoint.y)
-
-  --self.canvas:drawScaled(0, 0, getCameraScale())
 
   gfx.clearClipRect()
 end
