@@ -6,7 +6,7 @@ import "camera_utils"
 local gfx <const> = playdate.graphics
 local geom <const> = playdate.geometry
 
-class('Entity').extends(gfx.sprite)
+class('Entity').extends()
 
 function Entity:init(...)
   Entity.super.init(self, ...)
@@ -31,12 +31,13 @@ function Entity:setLogicalPos(x, y)
   self.logicalY = y
 
   local transformedX, transformedY = self.transform:transformXY(self.logicalX, self.logicalY)
-  self:moveTo(transformedX, transformedY)
+  --self:moveTo(transformedX, transformedY)
 end
 
 function Entity:updateTransformedImage()
   if self.originalImage ~= nil then
     self:setImage(self.originalImage:transformedImage(self.transform))
+    --self:setImage(self.originalImage)
   end
 end
 

@@ -22,6 +22,10 @@ function distance(x1, y1, x2, y2)
   return math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
 end
 
+function angle(x1, y1, x2, y2)
+  return math.atan(y2 - y1, x2 - x1)
+end
+
 function min(...)
   local args = table.pack(...)
   local min = args[1]

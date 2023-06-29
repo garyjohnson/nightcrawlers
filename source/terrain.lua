@@ -140,7 +140,7 @@ function Terrain:findHighestYPoint(x, y, width, height)
   return nil
 end
 
-function Terrain:hit(x, y, radius)
+function Terrain:hit(x, y, angle, direction, radius)
   print("Terrain:hit: x:" .. x .. ", y:" .. y)
   x = math.floor(x)
   y = math.floor(y)
@@ -151,6 +151,8 @@ function Terrain:hit(x, y, radius)
     self.world,
     x,
     y,
+    radius,
+    angle,
     howMuchDirt
   )
   explosion:add()
@@ -176,6 +178,8 @@ function Terrain:howMuchDirt(x,y,radius)
 
   local leftX = math.max(0, x-radius)
   local rightX = math.min(WIDTH, x+radius)
+
+  print("y1: " .. topY .. ",y2: " .. bottomY .. ",x1: " .. leftX .. ",x2: " .. rightX)
 
   local dirtCount = 0
   for yPos = topY, bottomY, 1 do

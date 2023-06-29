@@ -7,7 +7,7 @@ local gfx <const> = playdate.graphics
 
 class('Projectile').extends(Entity)
 
-function Projectile:init(world, hitCallback, x, y, angle, direction, power, radius)
+function Projectile:init(world, hitCallback, x, y, angle, direction, power)
   Projectile.super.init(self)
 
   self.world = world
@@ -18,8 +18,10 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power, radi
   self.direction = direction
   self.angle = angle
   self.power = power * 8
-  self.radius = radius
+  self.radius = 3
   self.time = 0
+  self.previousX = x
+  self.previousY = y
 
   self:setLogicalPos(x, y)
   self:setOriginalImage(self:generateImage())
@@ -30,10 +32,13 @@ function Projectile:update()
 
   local logX = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   local logY = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
+  self.previousX = self.logicalX
+  self.previousY = self.logicalY
   self:setLogicalPos(logX, logY)
 
   if self.world.terrain:isColliding(self.logicalX+1, self.logicalY+1, (self.radius*2)-1, (self.radius*2)-1) then
-    self.world.terrain:hit(self.logicalX, self.logicalY, 25)
+    local angleOfApproach = angle(self.logicalX, self.logicalY, self.previousX, self.previousY)
+    self.world.terrain:hit(self.logicalX, self.logicalY, angleOfApproach, self.direction, 25)
     self.hitCallback(self)
   end
 end

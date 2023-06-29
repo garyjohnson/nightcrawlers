@@ -50,7 +50,7 @@ function Person:init(world)
 end
 
 function Person:fall()
-  print('falling!')
+  --print('falling!')
   self.midairState = 'falling'
   self.midairTime = 0
   self.midairAngle = degToRad(90)
@@ -60,7 +60,7 @@ function Person:fall()
 end
 
 function Person:jump()
-  print('jumping!')
+  --print('jumping!')
   self.midairState = 'jumping'
   self.midairTime = 0
   self.midairAngle = degToRad(310)
@@ -74,7 +74,7 @@ function Person:jump()
 end
 
 function Person:resetMidairVars()
-  print('not in midair anymore!')
+  --print('not in midair anymore!')
   self.midairState = 'none'
   self.midairTime = 0
   self.midairAngle = degToRad(0)
@@ -172,8 +172,7 @@ function Person:fireProjectile()
     self.logicalY,
     self.reticleAngle,
     self.direction,
-    self.weaponCharge.power,
-    3 --radius
+    self.weaponCharge.power
   )
 
   projectile:add()
@@ -185,7 +184,7 @@ end
 
 function Person:move(dt)
   if not(self:canMove()) then
-    print("move: can't move!")
+    --print("move: can't move!")
     return
   end
 
@@ -202,10 +201,10 @@ function Person:move(dt)
     if not(self.world.terrain:isColliding(desiredX, topY-self.logicalHeight, self.logicalWidth, self.logicalHeight)) then
       self:setLogicalPos(desiredX, topY)
     else
-      print("move:colliding at desired position!")
+      --print("move:colliding at desired position!")
     end
   else
-    print("move:above max climb!")
+    --print("move:above max climb!")
   end
 end
 
@@ -259,14 +258,14 @@ function Person:isTouchingGround()
 
   t = self.world.terrain:isColliding(self.logicalX, self.logicalY + self.logicalHeight, self.logicalWidth, 1)
   if not(t) then
-    print("is not touching ground at " .. self.logicalY + self.logicalHeight)
+    --print("is not touching ground at " .. self.logicalY + self.logicalHeight)
   end
   return t
 end
 
 function Person:snapToGroundIfBelow()
   if self.logicalY + self.logicalHeight >= HEIGHT then
-    print("snap to floor")
+    --print("snap to floor")
     self:setLogicalPos(self.logicalX, HEIGHT - self.logicalHeight - 1)
     return
   end
@@ -274,7 +273,7 @@ function Person:snapToGroundIfBelow()
   if self.world.terrain:isColliding(self.logicalX, self.logicalY, self.logicalWidth, self.logicalHeight) then
     local yPosAbove = self.world.terrain:getEmptyYPosAbove(self.logicalX, self.logicalY + self.logicalHeight, self.logicalWidth)
     if yPosAbove == nil then
-      print("yPosAbove nil, x:" .. self.logicalX .. " y:" .. self.logicalY .. " width:" .. self.logicalWidth .. " height:" .. self.logicalHeight)
+      --print("yPosAbove nil, x:" .. self.logicalX .. " y:" .. self.logicalY .. " width:" .. self.logicalWidth .. " height:" .. self.logicalHeight)
       return
     end
     self:setLogicalPos(self.logicalX, yPosAbove - self.logicalHeight)

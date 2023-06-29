@@ -7,32 +7,40 @@ import "explosion_particle"
 
 class('Explosion').extends(Entity)
 
-function Explosion:init(world, originX, originY, particleCount)
+function Explosion:init(world, originX, originY, radius, angle, particleCount)
   Explosion.super.init(self)
 
   self.world = world
   print("particleCount: " .. particleCount)
-  self.particleCount = particleCount / 100
+  self.particleCount = math.min(particleCount, 50)
+  print("real particleCount: " .. self.particleCount)
+  self.remainingParticles = 0
 
-  for i = 0, particleCount, 1 do
-    function handleProjectileHit(projectile)
-      projectile:remove()
+  playdate.graphics.sprite.setAlwaysRedraw(true)
+  print("setAlwaysRedraw=true")
+
+  for i = 1, self.particleCount + 1, 1 do
+    function handleParticleHit(particle)
+      particle:remove()
+      self.remainingParticles -= 1
+
+      if self.remainingParticles == 0 then
+        print("setAlwaysRedraw=false")
+        playdate.graphics.sprite.setAlwaysRedraw(false)
+      end
     end
     
-    local direction = math.random(0,1) == 0 and -1 or 1
-
-    local projectile = ExplosionParticle(
+    local particle = ExplosionParticle(
       world,
-      handleProjectileHit,
-      originX, 
-      originY,
-      math.random(-90, 90),
-      direction,
-      math.random(1, 40),
-      1 --radius
+      handleParticleHit,
+      math.random(originX - radius, originX + radius),
+      math.random(originY - radius, originY + radius),
+      angle + degToRad(math.random(-30, 30)),
+      math.random(10, 25)
     )
 
-    projectile:add()
+    self.remainingParticles += 1
+    particle:add()
   end
 end
 
