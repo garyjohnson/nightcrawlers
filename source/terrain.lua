@@ -146,6 +146,10 @@ function Terrain:hit(x, y, angle, direction, radius)
   y = math.floor(y)
   radius = math.floor(radius)
 
+  function handleExplosionComplete(explosion)
+    explosion:remove()
+  end
+
   local howMuchDirt = self:howMuchDirt(x, y, radius)
   playdate.graphics.sprite.setAlwaysRedraw(true)
   local explosion = Explosion(
@@ -154,7 +158,8 @@ function Terrain:hit(x, y, angle, direction, radius)
     y,
     radius,
     angle,
-    howMuchDirt
+    howMuchDirt,
+    handleExplosionComplete
   )
   explosion:add()
 
@@ -172,6 +177,7 @@ function Terrain:howMuchDirt(x,y,radius)
   local x = math.floor(x)
   local y = math.floor(y)
   local radius = math.floor(radius)
+  local radiusSquared = radius * radius
   local image = self:getOriginalImage()
 
   local topY = math.max(0, y-radius)
@@ -183,8 +189,12 @@ function Terrain:howMuchDirt(x,y,radius)
   local dirtCount = 0
   for yPos = topY, bottomY, 1 do
     for xPos = leftX, rightX, 1 do
-      if image:sample(xPos, yPos) ~= gfx.kColorClear then
-        dirtCount = dirtCount+1
+      local dx = xPos - x
+      local dy = yPos - y
+      local distanceSquared = dx * dx + dy * dy
+      if distanceSquared <= radiusSquared and 
+        image:sample(xPos, yPos) ~= gfx.kColorClear then
+          dirtCount = dirtCount+1
       end
     end
   end
