@@ -17,24 +17,22 @@ function Explosion:init(world, originX, originY, radius, angle, particleCount)
   self.world = world
   self.particleCount = math.min(particleCount, 100)
   local particles = {}
-  self.particles = particles
 
   for i = 1, self.particleCount + 1, 1 do
-    local particle = {}
     local x = math.random(originX - radius, originX + radius)
     local y = math.random(originY - radius, originY + radius)
-    local power = math.random(10, 25) * 8
-    local particleAngle = angle + degToRad(math.random(-30, 90))
-    local particleAngle = angle + degToRad(math.random(-30, 90))
-    particle.x = x
-    particle.y = y
-    particle.logicalX = x
-    particle.logicalY = y
-    particle.angle = degToRad(math.random(-180, 0))
-    particle.power = power
+    local particle = {
+      x = x,
+      y = y,
+      logicalX = x,
+      logicalY = y,
+      angle = math.random(-300, 0) / 100.0,
+      power = math.random(10, 25) * 8
+    }
     particles[i] = particle
   end
 
+  self.particles = particles
   self.time = 0
 
   self:setBounds(0, 0, WIDTH, HEIGHT)
@@ -67,7 +65,7 @@ function Explosion:draw(x, y, width, height)
   gfx.setColor(gfx.kColorWhite)
   gfx.setClipRect( x, y, width, height )
 
-  for i = 1, self.particleCount + 1, 1 do
+  for i = 1, #self.particles + 1, 1 do
     local particle = self.particles[i]
 
     if particle ~= nil then
