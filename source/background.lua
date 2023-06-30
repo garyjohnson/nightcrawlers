@@ -12,31 +12,29 @@ class('Background').extends(Object)
 function Background:init()
   Background.super.init(self)
 
-  self.canvas = gfx.image.new(WIDTH, HEIGHT)
-
   self.step = 1
   self.startValue = 50
   self.endValue = 63
   self.startY = 0
   self.endY = HEIGHT/2.5
 
-  self:generate()
+  self.image = self:generateImage()
 end
 
 function Background:draw(x, y, width, height)
   gfx.pushContext()
 
-  --gfx.setClipRect(cameraTransformRect(x, y, width, height))
   gfx.setClipRect(x, y, width, height)
 
-  local transformedPoint =  getCameraTransform():transformedPoint(geom.point.new(WIDTH/2, HEIGHT/2))
-  self.canvas:drawWithTransform(getCameraTransform(), transformedPoint.x, transformedPoint.y)
+  local transformedImage = self.image:transformedImage(getCameraTransform())
+  transformedImage:draw(cameraTransformPoint(0, 0))
 
   gfx.clearClipRect()
 end
 
-function Background:generate()
-  gfx.pushContext(self.canvas)
+function Background:generateImage()
+  local image = gfx.image.new(WIDTH, HEIGHT)
+  gfx.pushContext(image)
 
   gfx.clear(gfx.kColorWhite)
 
@@ -58,4 +56,5 @@ function Background:generate()
   end
 
   gfx.popContext()
+  return image
 end

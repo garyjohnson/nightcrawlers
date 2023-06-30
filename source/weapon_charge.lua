@@ -64,19 +64,23 @@ function WeaponCharge:draw(x, y, width, height)
   end
 
   gfx.pushContext()
-  gfx.setClipRect( x, y, width, height )
+  gfx.setClipRect(x, y, width, height)
   gfx.setColor(gfx.kColorWhite)
 
+  local originXY = cameraTransformPoint(self.radiusWithJitter, self.radiusWithJitter)
+  local topFarXY = cameraTransformPoint(self.topFarX, self.topFarY)
+  local bottomFarXY = cameraTransformPoint(self.bottomFarX, self.bottomFarY)
   gfx.fillPolygon(
-    self.radiusWithJitter,
-    self.radiusWithJitter,
-    self.topFarX,
-    self.topFarY,
-    self.bottomFarX,
-    self.bottomFarY
+    originXY.x,
+    originXY.y,
+    topFarXY.x,
+    topFarXY.y,
+    bottomFarXY.x,
+    bottomFarXY.y
   )
 
-  gfx.fillCircleAtPoint(self.farX, self.farY, self.endRadius)
+  local farXY = cameraTransformPoint(self.farX, self.farY)
+  gfx.fillCircleAtPoint(farXY.x, farXY.y, cameraTransformRadius(self.endRadius))
 
   gfx.clearClipRect()
   gfx.popContext()

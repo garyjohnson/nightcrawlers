@@ -88,11 +88,9 @@ function Explosion:draw(x, y, width, height)
     local particle = self.particles[i]
 
     if particle ~= nil then
-      gfx.drawPixel(particle.logicalX, particle.logicalY)
+      gfx.drawPixel(cameraTransformPoint(particle.logicalX, particle.logicalY))
     end
   end
 
   gfx.popContext()
-
-  self:updateTransformedImage()
 end

@@ -9,25 +9,20 @@ class('Camera').extends(Object)
 function Camera:init()
   Camera.super.init(self)
 
-  self.scale = 1.0
   self.transform = geom.affineTransform.new()
+  -- test camera translation
+  --self.transform:translate(WIDTH/2,HEIGHT/2)
+  --self:setScale(0.5)
+end
+
+function Camera:setScale(scale)
+  self.scale = scale
+  self.transform:scale(scale)
 end
 
 function Camera:getTransform()
   return self.transform
 end
 
-function Camera:getScale()
-  return self.scale
-end
-
 function Camera:update()
-end
-
-function updateTransform(sprite)
-  if sprite:isa(Entity) then
-    --sprite:setScale(getCameraScale())
-    sprite.transform = getCameraTransform()
-    sprite:updateTransformedImage()
-  end
 end

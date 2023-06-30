@@ -16,6 +16,7 @@ function Terrain:init(world)
   self.world = world
 
   self:setCenter(0, 0)
+  self:setLogicalPos(0, 0)
   self:setOriginalImage(self:generateImage())
 end
 

@@ -7,7 +7,6 @@ import "terrain"
 import "background"
 import "person"
 import "water"
-import "camera"
 
 local gfx <const> = playdate.graphics
 
@@ -16,7 +15,6 @@ class('World').extends(Object)
 function World:init()
   World.super.init(self)
 
-  self.camera = Camera()
   self.background = Background()
   gfx.sprite.setBackgroundDrawingCallback(
     function(x, y, width, height)
@@ -39,5 +37,4 @@ function World:init()
 end
 
 function World:update()
-  self.camera:update()
 end

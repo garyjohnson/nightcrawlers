@@ -1,23 +1,23 @@
 local geom <const> = playdate.geometry
 
 function getCameraTransform()
-  if world ~= nil then
-    return world.camera:getTransform()
-  end
-
-  return geom.affineTransform.new()
+  return camera:getTransform()
 end
 
-function getCameraScale()
-  if world ~= nil then
-    return world.camera:getScale()
-  end
-
-  return 1.0
+function cameraTransformPoint(point)
+  return getCameraTransform():transformedPoint(point)
 end
 
 function cameraTransformPoint(x, y)
   return getCameraTransform():transformedPoint(geom.point.new(x, y))
+end
+
+function cameraTransformXY(x, y)
+  return getCameraTransform():transformXY(x, y)
+end
+
+function cameraTransformRadius(radius)
+  return getCameraTransform():transformedPoint(geom.point.new(0, radius)).y
 end
 
 function cameraTransformRect(x, y, width, height)

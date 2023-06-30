@@ -14,12 +14,7 @@ function Entity:init(...)
   self.originalImage = nil
   self.logicalX = 0
   self.logicalY = 0
-  self.transform = geom.affineTransform.new()
-  --self.scale = 1.0
-  if world ~= nil and world.camera ~= nil then
-    self.transform = world.camera:getTransform()
-    self:updateTransformedImage()
-  end
+  self:updateTransformedImage()
 end
 
 function Entity:getLogicalPos()
@@ -30,13 +25,12 @@ function Entity:setLogicalPos(x, y)
   self.logicalX = x
   self.logicalY = y
 
-  local transformedX, transformedY = self.transform:transformXY(self.logicalX, self.logicalY)
-  self:moveTo(transformedX, transformedY)
+  self:moveTo(cameraTransformXY(self.logicalX, self.logicalY))
 end
 
 function Entity:updateTransformedImage()
   if self.originalImage ~= nil then
-    self:setImage(self.originalImage:transformedImage(self.transform))
+    self:setImage(self.originalImage:transformedImage(getCameraTransform()))
   end
 end
 
