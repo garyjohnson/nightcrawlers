@@ -2,7 +2,6 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "global_vars"
 import "math_utils"
-import "camera_utils"
 import "entity"
 
 class('Explosion').extends(Entity)
@@ -36,10 +35,10 @@ function Explosion:init(world, originX, originY, radius, angle, particleCount, o
     end
 
     local particle = {
-      x = x,
-      y = y,
-      logicalX = x,
-      logicalY = y,
+      originX = x,
+      originY = y,
+      currentX = x,
+      currentY = y,
       angle = angle,
       power = power
     }
@@ -65,30 +64,29 @@ function Explosion:update()
     local particle = self.particles[i]
 
     if particle ~= nil then
-      particle.logicalX = particle.x + (cos(particle.angle) * particle.power * time)
-      particle.logicalY = particle.y + (sin(particle.angle) * particle.power * time + (GRAVITY_ACCELERATION * time * time)) -- / 2.0))
+      particle.currentX = particle.originX + (cos(particle.angle) * particle.power * time)
+      particle.currentY = particle.originY + (sin(particle.angle) * particle.power * time + (GRAVITY_ACCELERATION * time * time)) -- / 2.0))
 
-      if (particle.logicalX < 0 or particle.logicalX > WIDTH) or
-        (particle.logicalY < 0 or particle.logicalY > HEIGHT) then
+      if (particle.currentX < 0 or particle.currentX > WIDTH) or
+        (particle.currentY < 0 or particle.currentY > HEIGHT) then
         self.particles[i] = nil
       end
     end
   end
 
   gfx.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
-  self:markDirty()
 end
 
 function Explosion:draw(x, y, width, height)
   gfx.pushContext()
   gfx.setColor(gfx.kColorWhite)
-  gfx.setClipRect( x, y, width, height )
+  gfx.setClipRect(x, y, width, height)
 
   for i = 1, #self.particles + 1, 1 do
     local particle = self.particles[i]
 
     if particle ~= nil then
-      gfx.drawPixel(cameraTransformPoint(particle.logicalX, particle.logicalY))
+      gfx.fillCircleAtPoint(particle.currentX, particle.currentY, 0.5)
     end
   end
 

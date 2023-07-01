@@ -14,11 +14,11 @@ function Reticle:init()
   self.y = 0
   self.radius = 7
 
-  self:setOriginalImage(self:generateImage())
+  self:setImage(self:generateImage())
 end
 
 function Reticle:update()
-  self:setLogicalPos(self.x, self.y)
+  self:moveTo(self.x, self.y)
 end
 
 function Reticle:generateImage()

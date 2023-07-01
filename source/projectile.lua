@@ -23,8 +23,8 @@ function Projectile:init(world, hitCallback, x, y, angle, direction, power)
   self.previousX = x
   self.previousY = y
 
-  self:setLogicalPos(x, y)
-  self:setOriginalImage(self:generateImage())
+  self:moveTo(x, y)
+  self:setImage(self:generateImage())
 end
 
 function Projectile:update()
@@ -32,13 +32,13 @@ function Projectile:update()
 
   local logX = self.originX + (self.power * math.cos(self.angle) * self.time * self.direction)
   local logY = self.originY + (self.power * math.sin(self.angle) * self.time + (GRAVITY_ACCELERATION * self.time * self.time / 2.0))
-  self.previousX = self.logicalX
-  self.previousY = self.logicalY
-  self:setLogicalPos(logX, logY)
+  self.previousX = self.x
+  self.previousY = self.y
+  self:moveTo(logX, logY)
 
-  if self.world.terrain:isColliding(self.logicalX+1, self.logicalY+1, (self.radius*2)-1, (self.radius*2)-1) then
-    local angleOfApproach = angle(self.logicalX, self.logicalY, self.previousX, self.previousY)
-    self.world.terrain:hit(self.logicalX, self.logicalY, angleOfApproach, self.direction, 25)
+  if self.world.terrain:isColliding(self.x+1, self.y+1, (self.radius*2)-1, (self.radius*2)-1) then
+    local angleOfApproach = angle(self.x, self.y, self.previousX, self.previousY)
+    self.world.terrain:hit(self.x, self.y, angleOfApproach, self.direction, 25)
     self.hitCallback(self)
   end
 end
@@ -55,6 +55,6 @@ function Projectile:generateImage()
 end
 
 function Projectile:collidesWithTerrain(terrain)
-  local groundPoint = terrain:findHighestYPoint(self.logicalX - self.radius, self.radius * 2)
-  return self.logicalY >= groundPoint
+  local groundPoint = terrain:findHighestYPoint(self.x - self.radius, self.radius * 2)
+  return self.y >= groundPoint
 end

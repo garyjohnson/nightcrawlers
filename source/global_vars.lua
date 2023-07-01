@@ -1,4 +1,4 @@
-inspect = import "inspect"
+inspect = import "lib/inspect"
 
 WIDTH = playdate.display.getWidth()
 HEIGHT = playdate.display.getHeight()

@@ -3,7 +3,7 @@ import "CoreLibs/graphics"
 import "global_vars"
 import "math_utils"
 import "entity"
-import "bayer"
+import "lib/bayer"
 import "explosion"
 
 local gfx <const> = playdate.graphics
@@ -15,9 +15,9 @@ function Terrain:init(world)
 
   self.world = world
 
+  self:setImage(self:generateImage())
   self:setCenter(0, 0)
-  self:setLogicalPos(0, 0)
-  self:setOriginalImage(self:generateImage())
+  self:moveTo(0, 0)
 end
 
 function Terrain:generateImage()
@@ -68,7 +68,7 @@ function Terrain:getEmptyYPosAbove(x, y, width)
         print("bad position! xPos: " .. xPos .. " yPos: " .. yPos)
       end
 
-      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         anyFound = true
         break
       end
@@ -100,7 +100,7 @@ function Terrain:isColliding(x, y, width, height)
 
   for yPos = (y+height), y, -1 do
     for xPos = x, (x+width) do
-      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         return true
       end
     end
@@ -128,7 +128,7 @@ function Terrain:findHighestYPoint(x, y, width, height)
   local rowEmpty = true
   for yPos = y+height, y, -1 do
     for xPos = x, (x+width) do
-      if self:getOriginalImage():sample(xPos, yPos) ~= gfx.kColorClear then
+      if self:getImage():sample(xPos, yPos) ~= gfx.kColorClear then
         rowEmpty = false
       end
     end
@@ -164,14 +164,12 @@ function Terrain:hit(x, y, angle, direction, radius)
   )
   explosion:add()
 
-  gfx.pushContext(self:getOriginalImage())
+  gfx.pushContext(self:getImage())
   gfx.setColor(gfx.kColorClear)
   gfx.fillCircleAtPoint(x, y, radius)
   gfx.popContext()
 
   gfx.sprite.addDirtyRect(x-radius, y-radius, x+radius, y+radius)
-
-  self:updateTransformedImage()
 end
 
 function Terrain:howMuchDirt(x,y,radius)
@@ -179,7 +177,7 @@ function Terrain:howMuchDirt(x,y,radius)
   local y = math.floor(y)
   local radius = math.floor(radius)
   local radiusSquared = radius * radius
-  local image = self:getOriginalImage()
+  local image = self:getImage()
 
   local topY = math.max(0, y-radius)
   local bottomY = math.min(HEIGHT, y+radius)

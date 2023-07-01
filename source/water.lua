@@ -5,7 +5,7 @@ import "CoreLibs/easing"
 import "global_vars"
 import "math_utils"
 import "entity"
-import "bayer"
+import "lib/bayer"
 
 local gfx <const> = playdate.graphics
 
@@ -24,15 +24,14 @@ function Water:init()
   self.animator = gfx.animator.new(3000, 0, self.waveWidth, playdate.easingFunctions.inOutSine)
   self.animator.repeatCount = -1
 
-  self:setOriginalImage(self:generateImage())
-  self:setCenter(0, 0)
-  self:setLogicalPos(0, HEIGHT-self.height)
+  self:setImage(self:generateImage())
+  self:moveTo(0, HEIGHT-self.height)
 end
 
 function Water:update()
   local value = self.animator:currentValue()
   local evenValue = value - (value % 2)
-  self:setLogicalPos(-evenValue, HEIGHT-self.height)
+  self:moveTo(-evenValue, HEIGHT-self.height)
 end
 
 function Water:generateImage()

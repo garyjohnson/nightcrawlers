@@ -15,6 +15,7 @@ class('World').extends(Object)
 function World:init()
   World.super.init(self)
 
+  self.enableInput = true
   self.background = Background()
   gfx.sprite.setBackgroundDrawingCallback(
     function(x, y, width, height)
@@ -38,3 +39,9 @@ end
 
 function World:update()
 end
+
+function World:setEnableInput(enableInput)
+  self.enableInput = enableInput
+  self.person:setEnableInput(enableInput)
+end
+

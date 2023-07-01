@@ -5,7 +5,7 @@ import "CoreLibs/timer"
 import "global_vars"
 import "camera"
 import "world"
-import "bayer"
+import "lib/bayer"
 
 local gfx <const> = playdate.graphics
 local time = playdate.getCurrentTimeMilliseconds()
@@ -17,6 +17,25 @@ function load()
   bayer.generateFillLUT()
   camera = Camera()
   world = World()
+
+  playdate.getSystemMenu():addMenuItem("Move camera", function() 
+    camera:setEnableInput(true)
+    world:setEnableInput(false)
+    gfx.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
+  end)
+
+  playdate.getSystemMenu():addMenuItem("Reset camera", function() 
+    camera:setEnableInput(false)
+    world:setEnableInput(true)
+    camera:reset()
+    gfx.sprite.addDirtyRect(0, 0, WIDTH, HEIGHT)
+  end)
+end
+
+function endMoveCamera()
+  camera:setEnableInput(false)
+  playdate.wait(100)
+  world:setEnableInput(true)
 end
 
 function playdate.update()

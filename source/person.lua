@@ -17,9 +17,10 @@ function Person:init(world)
   Person.super.init(self)
 
   self.world = world
+  self.enableInput = true
 
-  self.logicalWidth = 8
-  self.logicalHeight = 16
+  self.width = 8
+  self.height = 16
   self.name = "Gary"
 
   self.reticle = Reticle()
@@ -28,7 +29,7 @@ function Person:init(world)
 
   self.weaponCharge = WeaponCharge()
   self.weaponCharge:setZIndex(self:getZIndex() + 100)
-  self.weaponCharge:setLogicalPos(self.logicalX + (self.logicalWidth / 2), self.logicalY + 1)
+  self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
   self.weaponCharge:add()
 
   self.movementSpeed = 25
@@ -44,9 +45,13 @@ function Person:init(world)
 
   self:resetMidairVars()
 
-  self:setOriginalImage(self:generateImage())
+  self:setImage(self:generateImage())
   self:setCenter(0, 0)
-  self:setLogicalPos(100, 1)
+  self:moveTo(100, 1)
+end
+
+function Person:setEnableInput(enableInput)
+  self.enableInput = enableInput
 end
 
 function Person:fall()
@@ -55,8 +60,8 @@ function Person:fall()
   self.midairTime = 0
   self.midairAngle = degToRad(90)
   self.midairVelocity = 300
-  self.midairOriginX = self.logicalX
-  self.midairOriginY = self.logicalY
+  self.midairOriginX = self.x
+  self.midairOriginY = self.y
 end
 
 function Person:jump()
@@ -66,9 +71,9 @@ function Person:jump()
   self.midairAngle = degToRad(310)
   -- what is this in units? pixels per second?
   self.midairVelocity = 70
-  self.logicalY = self.logicalY - 1
-  self.midairOriginX = self.logicalX
-  self.midairOriginY = self.logicalY
+  self.y = self.y - 1
+  self.midairOriginX = self.x
+  self.midairOriginY = self.y
   -- need to kick off the ground
   -- or we'll be considered landed
 end
@@ -107,8 +112,8 @@ function Person:processMidairMovement(dt)
   end
 
   if not(isTouchingGround) then
-    self.logicalX = self.midairOriginX + (self.midairVelocity * math.cos(self.midairAngle) * self.midairTime * self.direction)
-    self.logicalY = self.midairOriginY + (self.midairVelocity * math.sin(self.midairAngle) * self.midairTime + (GRAVITY_ACCELERATION * self.midairTime * self.midairTime / 2.0))
+    self.x = self.midairOriginX + (self.midairVelocity * math.cos(self.midairAngle) * self.midairTime * self.direction)
+    self.y = self.midairOriginY + (self.midairVelocity * math.sin(self.midairAngle) * self.midairTime + (GRAVITY_ACCELERATION * self.midairTime * self.midairTime / 2.0))
   elseif self:isJumpingOrFalling() then
     self:resetMidairVars()
   end
@@ -126,29 +131,29 @@ function Person:update()
   self:processMidairMovement(deltaTime)
   self:processInput(deltaTime)
 
-  self:setLogicalPos(self.logicalX, self.logicalY)
+  self:moveTo(self.x, self.y)
 
   self.reticle:setVisible(not(playdate.isCrankDocked()))
   if self.reticle:isVisible() then
-    self.reticle.x = round(self.logicalX + (self.logicalWidth / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
-    self.reticle.y = round(self.logicalY + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
+    self.reticle.x = round(self.x + (self.width / 2) + (self.reticleDistance * self.direction * math.cos(self.reticleAngle)))
+    self.reticle.y = round(self.y + 1 + (self.reticleDistance * math.sin(self.reticleAngle)))
   end
 
   self.weaponCharge:setVisible(not(playdate.isCrankDocked()) or self.weaponCharge.power > 0)
   if self.weaponCharge:isVisible() then
     self.weaponCharge.direction = self.direction
-    self.weaponCharge:setLogicalPos(self.logicalX + (self.logicalWidth / 2), self.logicalY + 1)
+    self.weaponCharge:moveTo(self.x + (self.width / 2), self.y + 1)
   end
 end
 
 function Person:generateImage()
-  local image = gfx.image.new(self.logicalWidth, self.logicalHeight)
+  local image = gfx.image.new(self.width, self.height)
   gfx.pushContext(image)
 
   gfx.setColor(gfx.kColorWhite)
-  gfx.fillRect(0, 0, self.logicalWidth, self.logicalHeight)
+  gfx.fillRect(0, 0, self.width, self.height)
   gfx.setColor(gfx.kColorBlack)
-  gfx.fillRect(1, 1, self.logicalWidth-2, self.logicalHeight-2)
+  gfx.fillRect(1, 1, self.width-2, self.height-2)
 
   --gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
   --gfx.drawTextAligned(self.name, self.x + (self.width/2), self.y - 20, kTextAlignment.center)
@@ -168,8 +173,8 @@ function Person:fireProjectile()
   local projectile = Projectile(
     self.world,
     handleProjectileHit,
-    self.logicalX + (self.logicalWidth / 2) + (self.direction*self.logicalWidth/2),
-    self.logicalY,
+    self.x + (self.width / 2) + (self.direction*self.width/2),
+    self.y,
     self.reticleAngle,
     self.direction,
     self.weaponCharge.power
@@ -188,23 +193,19 @@ function Person:move(dt)
     return
   end
 
-  local desiredX = self.logicalX + (self.movementSpeed * dt * self.direction)
+  local desiredX = self.x + (self.movementSpeed * dt * self.direction)
 
-  local topY = self.world.terrain:findHighestYPoint(desiredX, self.logicalY, self.logicalWidth, self.logicalHeight)
+  local topY = self.world.terrain:findHighestYPoint(desiredX, self.y, self.width, self.height)
   if topY == nil then
-    topY = self.logicalY
+    topY = self.y
   end
 
   local maxClimb = 6
 
-  if ((topY-self.logicalHeight) - self.logicalY) < maxClimb then
-    if not(self.world.terrain:isColliding(desiredX, topY-self.logicalHeight, self.logicalWidth, self.logicalHeight)) then
-      self:setLogicalPos(desiredX, topY)
-    else
-      --print("move:colliding at desired position!")
+  if ((topY-self.height) - self.y) < maxClimb then
+    if not(self.world.terrain:isColliding(desiredX, topY-self.height, self.width, self.height)) then
+      self:moveTo(desiredX, topY)
     end
-  else
-    --print("move:above max climb!")
   end
 end
 
@@ -213,7 +214,10 @@ function Person:processInput(dt, direction)
     return
   end
 
-  self.reticle.hidden = playdate.isCrankDocked()
+  if not self.enableInput then
+    return
+  end
+
   self.reticle.hidden = playdate.isCrankDocked()
 
   if playdate.buttonIsPressed(playdate.kButtonLeft) then
@@ -252,30 +256,24 @@ function Person:processInput(dt, direction)
 end
 
 function Person:isTouchingGround()
-  if self.logicalY + self.logicalHeight >= HEIGHT - 1 then
+  if self.y + self.height >= HEIGHT - 1 then
     return true
   end
 
-  t = self.world.terrain:isColliding(self.logicalX, self.logicalY + self.logicalHeight, self.logicalWidth, 1)
-  if not(t) then
-    --print("is not touching ground at " .. self.logicalY + self.logicalHeight)
-  end
-  return t
+  return self.world.terrain:isColliding(self.x, self.y + self.height, self.width, 1)
 end
 
 function Person:snapToGroundIfBelow()
-  if self.logicalY + self.logicalHeight >= HEIGHT then
-    --print("snap to floor")
-    self:setLogicalPos(self.logicalX, HEIGHT - self.logicalHeight - 1)
+  if self.y + self.height >= HEIGHT then
+    self:moveTo(self.x, HEIGHT - self.height - 1)
     return
   end
 
-  if self.world.terrain:isColliding(self.logicalX, self.logicalY, self.logicalWidth, self.logicalHeight) then
-    local yPosAbove = self.world.terrain:getEmptyYPosAbove(self.logicalX, self.logicalY + self.logicalHeight, self.logicalWidth)
+  if self.world.terrain:isColliding(self.x, self.y, self.width, self.height) then
+    local yPosAbove = self.world.terrain:getEmptyYPosAbove(self.x, self.y + self.height, self.width)
     if yPosAbove == nil then
-      --print("yPosAbove nil, x:" .. self.logicalX .. " y:" .. self.logicalY .. " width:" .. self.logicalWidth .. " height:" .. self.logicalHeight)
       return
     end
-    self:setLogicalPos(self.logicalX, yPosAbove - self.logicalHeight)
+    self:moveTo(self.x, yPosAbove - self.height)
   end
 end

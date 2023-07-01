@@ -1,8 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "global_vars"
-import "bayer"
-import "camera_utils"
+import "lib/bayer"
 
 local gfx <const> = playdate.graphics
 local geom <const> = playdate.geometry
@@ -26,8 +25,7 @@ function Background:draw(x, y, width, height)
 
   gfx.setClipRect(x, y, width, height)
 
-  local transformedImage = self.image:transformedImage(getCameraTransform())
-  transformedImage:draw(cameraTransformPoint(0, 0))
+  self.image:draw(camera.panX, camera.panY)
 
   gfx.clearClipRect()
 end
